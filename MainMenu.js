@@ -14,6 +14,7 @@ BasicGame.MainMenu.prototype = {
 		// Load game button
 		button_offset = 0;
 		if ($.cookie('saved_state') != '') {
+			console.log($.cookie('saved_state'));	
 			button_offset = 100;
 			load_game_button = this.game.add.button(0, 100, 'button', this.loadSavedState, this, 2, 1, 0);
 			load_game_button_text = this.game.add.text(0, 0, 'Load saved game', {font: '20px Arial', fill: '#fff', align: 'center'});
