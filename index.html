@@ -1,0 +1,197 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>Phaser Basic Project Template</title>
+	<script src="js/jquery.min.js"></script>
+	<script src="js/underscore-min.js"></script>
+	<script src="js/jquery.cookie.js"></script>
+	<script src="js/phaser.min.js"></script>
+	<script src="js/get_math_problem.js"></script>
+	<script src="Boot.js"></script>
+	<script src="Preloader.js"></script>
+	<script src="TitleScreen.js"></script>
+	<script src="MainMenu.js"></script>
+	<script src="StoryScenes.js"></script>
+	<script src="HorseGame.js"></script>
+	<script src="PlatformGame.js"></script>
+	<script src="SideScrollerGame.js"></script>
+	<script src="Credits.js"></script>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+		}
+	</style>
+</head>
+<body>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	var game = new Phaser.Game(1280, 720, Phaser.AUTO);
+
+	//	Game states
+	game.state.add('Boot', BasicGame.Boot);
+	game.state.add('Preloader', BasicGame.Preloader);
+	game.state.add('TitleScreen', BasicGame.TitleScreen);
+	game.state.add('MainMenu', BasicGame.MainMenu);
+	game.state.add('StoryScene1', BasicGame.StoryScene1);
+	game.state.add('StoryScene2', BasicGame.StoryScene2);
+	game.state.add('StoryScene3', BasicGame.StoryScene3);
+	game.state.add('StoryScene4', BasicGame.StoryScene4);
+	game.state.add('HorseGame', BasicGame.HorseGame);
+	game.state.add('PlatformGame', BasicGame.PlatformGame);
+	game.state.add('SideScrollerGame', BasicGame.SideScrollerGame);
+	game.state.add('Credits', BasicGame.Credits);
+
+	//	Now start the Boot state.
+	game.state.start('Boot');
+	
+	// Global variables
+	game.global_vars = {
+		'player_overall_score': 0,
+		'story_mode': false,
+		'games_unlocked': 0,
+		'load_saved_state': false,
+		'saved_state': '',
+		'saved_level': 0
+	};
+	
+	// Mini game order
+	game.mini_game_order = [
+		{'title': 'Horse Game',
+			'state': 'HorseGame',
+			'thumbnail': ''},
+		{'title': 'Platform game',
+			'state': 'PlatformGame',
+			'thumbnail': ''},
+		{'title': 'Side Scroller Game',
+			'state': 'SideScrollerGame',
+			'thumbnail': ''}
+	];
+	
+	// Story mode state order
+	game.story_mode_state_order = [
+		'StoryScene1',
+		game.mini_game_order[0].state,
+		'StoryScene2',
+		game.mini_game_order[1].state,
+		'StoryScene3',
+		game.mini_game_order[2].state,
+		'StoryScene4',
+		'Credits'
+	];
+	
+	// Answer input button layer to be used throughout all mini games
+	game.answer_buttons = {};
+	game.answer_buttons[1] = function () {
+		this.checkAnswer(1);
+	};
+	game.answer_buttons[2] = function () {
+		this.checkAnswer(2);
+	};
+	game.answer_buttons[3] = function () {
+		this.checkAnswer(3);
+	};
+	game.answer_buttons[4] = function () {
+		this.checkAnswer(4);
+	};
+	game.answer_buttons[5] = function () {
+		this.checkAnswer(5);
+	};
+	game.answer_buttons[6] = function () {
+		this.checkAnswer(6);
+	};
+	game.answer_buttons[7] = function () {
+		this.checkAnswer(7);
+	};
+	game.answer_buttons[8] = function () {
+		this.checkAnswer(8);
+	};
+	game.answer_buttons[9] = function () {
+		this.checkAnswer(9);
+	};
+	game.answer_buttons[10] = function () {
+		this.checkAnswer(10);
+	};
+	game.answer_buttons[11] = function () {
+		this.checkAnswer(11);
+	};
+	game.answer_buttons[12] = function () {
+		this.checkAnswer(12);
+	};
+	game.answer_buttons[13] = function () {
+		this.checkAnswer(13);
+	};
+	game.answer_buttons[14] = function () {
+		this.checkAnswer(14);
+	};
+	game.answer_buttons[15] = function () {
+		this.checkAnswer(15);
+	};
+	game.answer_buttons[16] = function () {
+		this.checkAnswer(16);
+	};
+	game.answer_buttons[17] = function () {
+		this.checkAnswer(17);
+	};
+	game.answer_buttons[18] = function () {
+		this.checkAnswer(18);
+	};
+	game.answer_buttons[19] = function () {
+		this.checkAnswer(19);
+	};
+	game.answer_buttons[20] = function () {
+		this.checkAnswer(20);
+	};
+	
+	// Global functions
+	game.saveGame = function(state, level) {
+		console.log('Saving game!');
+		
+		$.cookie('saved_state', state);
+		$.cookie('saved_level', level);
+	};
+	
+	game.deleteSavedState = function() {
+		// Delete saved game
+		$.cookie('saved_state', '');
+		$.cookie('saved_level', '1');
+		this.global_vars.saved_state = '';
+		this.global_vars.saved_level = 1;	
+	};
+	
+	game.goToNextState = function() {
+		// Find next state in the list
+		var cur_index = _.indexOf(this.game.story_mode_state_order, this.state_label);
+		var next_state = this.game.story_mode_state_order[cur_index + 1];
+		
+		// console.log('*goToNextState');
+		// console.log(this);
+		// console.log(this.game.story_mode_state_order);
+		// console.log(this.state_label);
+		// console.log(cur_index);
+		// console.log(next_state);
+		// console.log('*end goToNextState');
+		
+		// Save progress
+		this.game.saveGame(next_state, 1);
+		
+		// Move on to next state
+		this.game.state.start(next_state);
+	};
+	
+	game.unlockMiniGame = function(game_state_label) {
+		$.cookie(game_state_label, 'true');
+	};
+	
+	game.getMathProblem = function(type) {
+		var difficulty = 'easy';
+		return getMathProblem(type, difficulty);
+	}
+});
+
+</script>
+
+</body>
+</html>
