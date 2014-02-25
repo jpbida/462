@@ -9,6 +9,7 @@ BasicGame.PlatformGame.prototype = {
 	create: function() {
 		this.game.add.text(0, 0, 'Platform game', {font: '65px arial', fill: '#fff'});
 		console.log('Platform game');
+		console.log('AMOL WAS HERE');
 		this.game.input.onDown.add(this.winGame, this);
 	},
 	
