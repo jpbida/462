@@ -4,9 +4,12 @@
 	<meta charset="UTF-8" />
 	<title>Phaser Basic Project Template</title>
 	<script src="js/jquery.min.js"></script>
+	<script src="js/jquery-ui.min.js"></script>
+	<script src="js/jquery.ba-outside-events.min.js"></script>
 	<script src="js/underscore-min.js"></script>
 	<script src="js/jquery.cookie.js"></script>
-	<script src="js/phaser.min.js"></script>
+	<!--<script src="js/phaser.min.js"></script>-->
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/phaser/1.1.5/phaser.min.js"></script>
 	<script src="js/get_math_problem.js"></script>
 	<script src="Boot.js"></script>
 	<script src="Preloader.js"></script>
@@ -17,17 +20,54 @@
 	<script src="PlatformGame.js"></script>
 	<script src="SideScrollerGame.js"></script>
 	<script src="Credits.js"></script>
+	
+	<link href='css/jquery-ui.min.css' rel='stylesheet' type='text/css'>
+	<!--<link href='http://fonts.googleapis.com/css?family=Galindo|Montserrat+Alternates|Orbitron:500|Righteous' rel='stylesheet' type='text/css'>-->
+	
 	<style>
+		@font-face {
+			font-family: kenvector_future;
+			src: url(assets/ui/kenvector_future.ttf);
+		}
+		
 		body {
+			font-family: kenvector_future;
 			margin: 0;
 			padding: 0;
+			background: #fff;
+		}
+		
+		#pause_menu {
+			font-family: kenvector_future;
+		}
+		
+		#pause_menu_title {
+			text-align: center;
+		}
+		
+		#pause_menu_options {
+			width: 100%;
+			margin: 0 auto;
+			padding: 0;
+		}
+		
+		#pause_menu_options li {
+			list-style-type: none;
+			margin: 5px auto;
+			font-size: 12pt;
+			line-height: 49px;
+			text-align: center;
+			width: 190px;
+			height: 49px;
+			background-image: url('assets/ui/yellow_button00.png');
 		}
 	</style>
 </head>
 <body>
 
 <script type="text/javascript">
-$(document).ready(function(){
+$(document).ready(function(){	
+	// Game stuff
 	var game = new Phaser.Game(1280, 720, Phaser.AUTO);
 
 	//	Game states
@@ -81,6 +121,78 @@ $(document).ready(function(){
 		'StoryScene4',
 		'Credits'
 	];
+	
+	// Global functions
+	game.saveGame = function(state, level) {
+		console.log('Saving game!');
+		
+		this.global_vars.saved_state = state;
+		this.global_vars.saved_level = level;
+		$.cookie('saved_state', state);
+		$.cookie('saved_level', level);
+	};
+	
+	game.deleteSavedState = function() {
+		// Delete saved game
+		$.cookie('saved_state', '');
+		$.cookie('saved_level', '1');
+		this.global_vars.saved_state = '';
+		this.global_vars.saved_level = 1;	
+	};
+	
+	game.goToNextState = function() {
+		// Find next state in the list
+		var cur_index = _.indexOf(this.game.story_mode_state_order, this.state_label);
+		var next_state = this.game.story_mode_state_order[cur_index + 1];
+		
+		// Save progress
+		this.game.saveGame(next_state, 1);
+		
+		// Move on to next state
+		this.game.state.start(next_state);
+	};
+	
+	game.unlockMiniGame = function(game_state_label) {
+		$.cookie(game_state_label, 'true');
+	};
+	
+	game.getMathProblem = function(type) {
+		var difficulty = 'easy';
+		return getMathProblem(type, difficulty);
+	}
+	
+	game.randomIntFromInterval = function(min, max) {
+		return randomIntFromInterval(min, max);
+	}
+	
+	game.createAnswerButtons = function() {		
+		// Answer button group
+		var answer_button_group = this.game.add.group();
+		for (var i = 0; i < 20; i++) {
+			// Determine button position
+			if (i < 10) {
+				answer_button_x = 0;
+				answer_button_y = i * 72;
+			} else {
+				answer_button_x = this.game.world.width - 73;
+				answer_button_y = (i - 10) * 72;
+			}
+			
+			value = i + 1;
+			var answer_button = this.game.add.button(answer_button_x, answer_button_y, 'answer_button_bg', this.game.answer_buttons[value], this, 0, 0, 1);
+			// var answer_button = this.game.add.button(answer_button_x, answer_button_y, 'buttons', this.game.answer_buttons[value], this, 14, 14, 15);
+			//answer_button.anchor.setTo(0, 1);
+			answer_button.value = value;
+			
+			var answer_button_text = this.game.add.text(40, 36, value, {font: '40px kenvector_future', fill: '#fff', align: 'center'});
+			answer_button_text.anchor.setTo(0.5, 0.5);
+			answer_button.addChild(answer_button_text);
+			
+			answer_button_group.add(answer_button);
+		}
+		
+		return answer_button_group;
+	};
 	
 	// Answer input button layer to be used throughout all mini games
 	game.answer_buttons = {};
@@ -145,53 +257,61 @@ $(document).ready(function(){
 		this.checkAnswer(20);
 	};
 	
-	// Global functions
-	game.saveGame = function(state, level) {
-		console.log('Saving game!');
-		
-		$.cookie('saved_state', state);
-		$.cookie('saved_level', level);
+	// Pause menu stuff
+	game.pause = function() {
+		this.game.state.pause();
+		$('canvas').hide();
+		$('#pause_menu').dialog('open');
 	};
 	
-	game.deleteSavedState = function() {
-		// Delete saved game
-		$.cookie('saved_state', '');
-		$.cookie('saved_level', '1');
-		this.global_vars.saved_state = '';
-		this.global_vars.saved_level = 1;	
+	game.unpause = function() {
+		$('canvas').show();
+		this.paused = false;
 	};
 	
-	game.goToNextState = function() {
-		// Find next state in the list
-		var cur_index = _.indexOf(this.game.story_mode_state_order, this.state_label);
-		var next_state = this.game.story_mode_state_order[cur_index + 1];
-		
-		// console.log('*goToNextState');
-		// console.log(this);
-		// console.log(this.game.story_mode_state_order);
-		// console.log(this.state_label);
-		// console.log(cur_index);
-		// console.log(next_state);
-		// console.log('*end goToNextState');
-		
-		// Save progress
-		this.game.saveGame(next_state, 1);
-		
-		// Move on to next state
-		this.game.state.start(next_state);
-	};
+	$('#pause_menu').dialog({
+		autoOpen: false,
+		height: 250,
+		width: 250,
+		modal: true
+	});
 	
-	game.unlockMiniGame = function(game_state_label) {
-		$.cookie(game_state_label, 'true');
-	};
+	$('.ui-dialog-titlebar').hide();
 	
-	game.getMathProblem = function(type) {
-		var difficulty = 'easy';
-		return getMathProblem(type, difficulty);
-	}
+	$('#pause_menu').click(function(){
+		game.unpause();
+	});
+	
+	$('#resume_game').click(function(){
+		$('#pause_menu').dialog('close');
+		game.unpause();
+	});
+	
+	$('#restart_level').click(function(){
+		$('#pause_menu').dialog('close');
+		// game.unpause();
+		// console.log(game.state.current);
+	});
+	
+	$('#main_menu').click(function(){
+		$('#pause_menu').dialog('close');
+		game.state.start('MainMenu');
+	});
 });
 
 </script>
+
+<div id="pause_menu">
+	<div id="pause_menu_title">
+		Pause Menu
+	</div>
+	
+	<ul id="pause_menu_options">
+		<li id="resume_game">Resume Game</li>
+		<li id="restart_level">Restart Level</li>
+		<li id="main_menu">Main Menu</li>
+	</ul>
+</div>
 
 </body>
 </html>
