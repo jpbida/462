@@ -49,17 +49,30 @@ BasicGame.HorseGame = function (game) {
 	this.opponents = null;
 	this.finish_line = null;
 	this.end_text = null;
+	
+	this.background_music = null;
+	this.win_sound = null;
+	this.lose_sound = null;
+	this.right_answer_sound = null;
+	this.wrong_answer_sound = null;
 };
 
 BasicGame.HorseGame.prototype = {
 	preload: function() {
 		// Finish line
-		this.game.load.spritesheet('finish_line', 'assets/racing_game/finish_line.png', 37, 281);
+		this.game.load.image('finish_line', 'assets/racing_game/finish_line.png');
 	},
 	
 	create: function() {
 		console.log('Horse game');
 		
+		// Audio
+		this.background_music = this.game.add.audio('racing_background_music');
+		this.win_sound = this.game.add.audio('win_sound');
+		this.lose_sound = this.game.add.audio('lose_sound');
+		this.right_answer_sound = this.game.add.audio('right_answer_sound');
+		this.wrong_answer_sound = this.game.add.audio('wrong_answer_sound');
+			
 		// Manage Layers
 		this.background_layer = this.game.add.group();
 		this.background_layer.z = 0;
@@ -110,6 +123,14 @@ BasicGame.HorseGame.prototype = {
 		this.startLevel();
 	},
 	
+	pause: function() {
+		this.background_music.pause();
+	},
+	
+	unpause: function() {
+		this.background_music.resume();
+	},
+	
 	update: function() {
 		if (!this.started) {
 			return;
@@ -136,8 +157,13 @@ BasicGame.HorseGame.prototype = {
 		
 		this.zizo.x = this.starting_line_position;
 		this.zizo.play('wait');
+		this.zizo.body.velocity.x = 0;
 		
 		this.opponents.setAll('x', this.starting_line_position);
+		this.opponents.setAll('body.velocity.x', 0);
+		this.opponents.callAll('play', null, 'wait');
+		
+		this.background_music.stop();
 	},
 	
 	startLevel: function() {
@@ -165,6 +191,8 @@ BasicGame.HorseGame.prototype = {
 	
 	startCountDown: function() {
 		this.start_button.destroy();
+		
+		this.background_music.play();
 		
 		var this_ref = this;
 		var count_down_text = this.game.add.text(this.game.world.centerX, 40, 'On your mark...', this.text_style);
@@ -214,6 +242,14 @@ BasicGame.HorseGame.prototype = {
 		var problem = this.game.getMathProblem('add');
 		this.answer = problem.answer;
 		
+		// if (this.problem_background == null || !this.problem_background.exists) {
+			// this.problem_background = this.game.add.graphics(this.game.world.centerX, 200);
+			// this.problem_background.anchor.setTo(0.5, 0.5);
+			// this.problem_background.lineStyle(2, 0x0000FF, 0.5);
+			// this.problem_background.beginFill(0x0000FF, 0.5);
+			// this.problem_background.drawRect(0, 0, 500, 250);
+		// }
+		
 		if (this.problem_text == null || !this.problem_text.exists) {
 			this.problem_text = this.game.add.text(this.game.world.centerX, 50, problem.text, {font: '65px kenvector_future', fill: '#fff'});
 			this.problem_text.anchor.setTo(0.5, 0.5);
@@ -224,8 +260,11 @@ BasicGame.HorseGame.prototype = {
 	
 	checkAnswer: function(answer) {
 		if (this.answer == answer) {
+			this.right_answer_sound.play();
 			this.displayNewProblem();
 			this.acceleratePlayer();
+		} else {
+			this.wrong_answer_sound.play();
 		}
 	},
 	
@@ -255,6 +294,7 @@ BasicGame.HorseGame.prototype = {
 		}
 		
 		this.endRace();
+		this.win_sound.play();
 		this.end_text = this.game.add.text(this.game.world.centerX, 40, 'You win!', this.text_style);
 		this.end_text.anchor.setTo(0.5, 0);
 		
@@ -267,6 +307,7 @@ BasicGame.HorseGame.prototype = {
 		}
 		
 		this.endRace();
+		this.lose_sound.play();
 		this.end_text = this.game.add.text(this.game.world.centerX, 40, 'You lose :( Try again!', this.text_style);
 		this.end_text.anchor.setTo(0.5, 0);
 		
@@ -281,6 +322,8 @@ BasicGame.HorseGame.prototype = {
 		this.zizo.animations.play('wait');
 		this.opponents.setAll('body.velocity.x', 0);
 		this.opponents.callAll('play', null, 'wait');
+		
+		this.background_music.stop();
 	},
 	
 	finishLevel: function() {
