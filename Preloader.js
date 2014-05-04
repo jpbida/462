@@ -46,8 +46,9 @@ BasicGame.Preloader.prototype = {
 		//	Once the load has finished we disable the crop because we're going to sit in the update loop for a short while as the music decodes
 		this.preloadBar.cropEnabled = false;
 		
-		this.game.state.start('TitleScreen');
+		// this.game.state.start('TitleScreen');
 		// this.game.state.start('SideScrollerGame');
 		// this.game.state.start('HorseGame');
+		this.game.state.start('PlatformGame');
 	}
 };
