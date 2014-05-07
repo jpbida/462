@@ -48,43 +48,83 @@ BasicGame.PlatformGame = function (game) {
 	this.answer = 0;
 	this.zizo = null;
 	
+	
 	this.background_music = null;
 };
 
 BasicGame.PlatformGame.prototype = {
 	preload: function() {
 		this.game.load.tilemap('level_1', 'assets/platform_game/level_1.json', null, Phaser.Tilemap.TILED_JSON);
-		this.background_music = this.game.add.audio('platform_background_music');
 		this.game.load.audio('platform_background_music', 'assets/platform_game/Def Leppard - Pour Some Sugar On Me.mp3');
-		//this.win_sound = this.game.add.audio('win_sound');
-		//this.lose_sound = this.game.add.audio('lose_sound');
-		//this.right_answer_sound = this.game.add.audio('right_answer_sound');
-		//this.wrong_answer_sound = this.game.add.audio('wrong_answer_sound');
-		
-	      
+		this.game.load.audio('win_sound', 'assets/platform_game/Def Leppard - Pour Some Sugar On Me.mp3');
+		this.game.load.audio('lose_sound', 'assets/platform_game/Def Leppard - Pour Some Sugar On Me.mp3');
+		this.game.load.audio('right_answer_sound', 'assets/platform_game/Def Leppard - Pour Some Sugar On Me.mp3');
+		this.game.load.audio('wrong_answer_sound', 'assets/platform_game/Def Leppard - Pour Some Sugar On Me.mp3');
+			      
 	},
 	
 	create: function() {
+	console.log('Platform Game creation starts');
+	
+	// Audio
+	this.background_music = this.game.add.audio('platform_background_music');
+	this.win_sound = this.game.add.audio('win_sound');
+	this.lose_sound = this.game.add.audio('lose_sound');
+	this.right_answer_sound = this.game.add.audio('right_answer_sound');
+	this.wrong_answer_sound = this.game.add.audio('wrong_answer_sound');
+	
+	this.game.add.tilemap('level_1');
+	console.log('image loaded');
+	//this.background.fixedToCamera = true;
+	
+	// Manage Layers
+	this.background_layer = this.game.add.group();
+	this.background_layer.z = 0;
 	
 	// Answer button group
 	this.answer_button_group = this.game.createAnswerButtons.call(this);
 	this.answer_button_group.z = 1;
+	
 	// Pause button / ui group
 	this.ui_layer = this.game.add.group();
 	this.ui_layer.z = 2;
 		
 	this.pause_button = this.game.add.button(this.game.world.width - 135, 20, 'pause_icon', this.game.pause, this);
 	this.ui_layer.add(this.pause_button);
+	
+	this.start_button = this.game.add.button(this.game.world.centerX, this.game.world.centerY, 'yellow_buttons', this.startCountDown, this, 3, 3, 4);
+	this.start_button.anchor.setTo(0.5, 0.5);
+	this.ui_layer.add(this.start_button);
+	this.start_text = this.game.add.text(0, 0, 'Click to start!', {font: '12pt kenvector_future', fill: '#fff', align: 'center'});
+	this.start_text.anchor.setTo(0.5, 0.5);
+	this.start_button.addChild(this.start_text);
+	
+	//create player zizo
+	// Create Zizo
+	this.zizo = this.game.add.sprite(100, this.game.world.height - 70, 'zizo');
+	this.zizo.anchor.setTo(1, 1);
+	
+	//this.game.physics.arcade.enable(this.zizo);
+	
+	//set this.zizo properties and give it a bounce effect
+	this.zizo.body.bounce.y = 1;
+	//this.zizo.body.gravity.y = 300;
+	this.zizo.body.collideWorldbounds = true;
+	
+	// give animation to this.zizo
+	this.zizo.animations.add('left',[0,1,2,3],10,true);
+	this.zizo.animations.add('right',[5,6,7,8],10,true);
+	
+	
+	//this.zizo.body.velocity.x = 0;
+	this.zizo.body.velocity.y = -100;
 		
+	this.game.camera.follow(this.zizo);
 		
+			
 	this.game.world.setBounds(0, 0, 1280, 4320);
 	this.game.camera.y = this.game.world.height;
-	
-	// Finish line
-	this.finish_line = this.game.add.sprite(this.game.world.width - 115, this.game.world.height - 25, 'finish_line');
-	this.finish_line.anchor.setTo(0, 1);
-	
-		
+			
 	this.startLevel();
 	//this.game.input.onDown.add(this.winGame, this);
  
@@ -92,42 +132,19 @@ BasicGame.PlatformGame.prototype = {
 	
 	startLevel: function() {
 	this.current_level = 1;
-		if (this.game.global_vars.load_saved_state) {
-				this.current_level = this.game.global_vars.saved_level;
-				this.game.global_vars.load_saved_state = false;
-		}
+	if (this.game.global_vars.load_saved_state) {
+			this.current_level = this.game.global_vars.saved_level;
+			this.game.global_vars.load_saved_state = false;
+	}
 	
-		this.background_music.play();
-		//this.background = this.game.add.sprite(0, 0, this.level_images[this.current_level]['background']);
-		//this.background.fixedToCamera = true;
-		
-		this.level_text = this.game.add.text(80, 10, 'Level ' + this.current_level, {font: '20px kenvector_future', fill: '#fff'});
-		this.level_text.fixedToCamera = true;
-		
-		
-		
-		// Create Zizo
-		this.zizo = this.game.add.sprite(100, this.game.world.height - 70, 'zizo');
-		this.zizo.anchor.setTo(1, 1);
-		this.zizo.animations.add('wait', [0], 1, false);
-		this.zizo.animations.add('on_mark', [6], 1, false);
-		this.zizo.animations.add('get_set', [3], 1, false);
-		this.zizo.animations.add('run', [9, 10], 5, true);
-		this.zizo.play('wait');
-		this.zizo.body.velocity.x = 0;
-		this.zizo.body.velocity.y = -200;
-		
-		this.game.camera.follow(this.zizo);
-		
-		// Reset 
-		this.reset();
-		
-		this.start_button = this.game.add.button(this.game.world.centerX, this.game.world.centerY, 'yellow_buttons', this.startCountDown, this, 3, 3, 4);
-		this.start_button.anchor.setTo(0.5, 0.5);
-		this.start_text = this.game.add.text(0, 0, 'Click to start!', {font: '12pt kenvector_future', fill: '#fff', align: 'center'});
-		this.start_text.anchor.setTo(0.5, 0.5);
-		this.start_button.addChild(this.start_text);
-		
+	this.background_music = this.game.add.audio('platform_background_music');
+	this.background_music.play();
+	
+	
+	this.level_text = this.game.add.text(80, 10, 'Level ' + this.current_level, {font: '20px kenvector_future', fill: '#fff'});
+	this.level_text.fixedToCamera = true;
+	// Reset 
+    this.reset();		
 	},
 	
 	pause: function() {
@@ -142,8 +159,27 @@ BasicGame.PlatformGame.prototype = {
 	},
 	
 	update: function() {
-	this.game.physics.overlap(this.zizo, this.finish_line, this.winGame, null, this);
-	this.game.physics.overlap(this.opponents, this.finish_line, this.loseGame, null, this);
+	
+	
+	keys = this.game.input.keyboard.createCursorKeys();
+	this.zizo.body.velocity.x = 0;
+		
+	var force = 10;
+		if(keys.left.isDown){
+		this.zizo.bodyy.velocity.x -= force;
+		this.zizo.animations.play('left');
+		}else if(keys.right.isDown){
+		this.zizo.bodyy.velocity.x += force;
+		this.zizo.animations.play('right');
+		}else if(keys.up.isDown){
+		this.zizo.bodyy.velocity.y -= 200;
+		}else if(keys.down.isDown){
+		this.zizo.bodyy.velocity.y += 200;
+		}else{
+		this.zizo.animations.stop();
+		this.zizo.frame = 4;
+		}
+	
 		    
 	},
 	reset: function() {
@@ -164,31 +200,28 @@ BasicGame.PlatformGame.prototype = {
 		this.start_button.destroy();
 		
 		this.background_music.play();
-		
-		var this_ref = this;
+	
+	/*	var this_ref = this;
 		var count_down_text = this.game.add.text(this.game.world.centerX, 40, 'On your mark...', this.text_style);
 		count_down_text.anchor.setTo(0.5, 0.5);
 		
 		this.zizo.play('on_mark');
-		this.opponents.callAll('play', null, 'on_mark');
-		
+				
 		setTimeout(function(){
 			count_down_text.setText('Get set...');
 			this_ref.zizo.play('get_set');
-			this_ref.opponents.callAll('play', null, 'get_set');
-			
+					
 			setTimeout(function(){
 				count_down_text.setText('GO!!!');
 				
 				setTimeout(function(){
 					count_down_text.destroy();
 					this_ref.zizo.play('run');
-					this_ref.opponents.callAll('play', null, 'run');
-					
+						
 					this_ref.startRace.call(this_ref);
 				}, 1000);
 			}, 1000);
-		}, 1000);
+		}, 1000);*/
 	},
 	
 	displayNewProblem: function() {
