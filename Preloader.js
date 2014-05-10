@@ -12,6 +12,7 @@ BasicGame.Preloader.prototype = {
 		this.game.load.image('bg_shroom', 'assets/backgrounds/bg_shroom_lg.png');
 		this.game.load.image('bg_castle', 'assets/backgrounds/bg_castle_lg.png');
 		this.game.load.image('bg_grasslands', 'assets/backgrounds/bg_grasslands_lg.png');
+		this.game.load.image('bg_boss', 'assets/boss_game/bg_boss.png');
 		
 		// User interfaces
 		this.game.load.spritesheet('button', 'assets/buttons.png', 193, 71);
@@ -37,6 +38,7 @@ BasicGame.Preloader.prototype = {
 		this.game.load.audio('lose_sound', 'assets/common_sounds/Sad-Trombone.mp3');
 		this.game.load.audio('right_answer_sound', 'assets/common_sounds/right_answer_ding.mp3');
 		this.game.load.audio('wrong_answer_sound', 'assets/common_sounds/Banana Peel Slip Zip-SoundBible.com-803276918.mp3');
+		this.game.load.audio('boss_background_music', 'assets/boss_game/Battle_Special.mp3');
 	},
 	
 	create: function() {
@@ -49,6 +51,6 @@ BasicGame.Preloader.prototype = {
 		// this.game.state.start('TitleScreen');
 		// this.game.state.start('SideScrollerGame');
 		// this.game.state.start('HorseGame');
-		this.game.state.start('PlatformGame');
+		this.game.state.start('BossGame');
 	}
 };
