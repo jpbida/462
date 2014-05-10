@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="UTF-8" />
-	<title>Phaser Basic Project Template</title>
+	<title>Zizo and the Math Monsters</title>
 	<script src="js/jquery.min.js"></script>
 	<script src="js/jquery-ui.min.js"></script>
 	<script src="js/jquery.ba-outside-events.min.js"></script>
@@ -35,7 +35,7 @@
 			font-family: kenvector_future;
 			margin: 0;
 			padding: 0;
-			background: #fff;
+			background: #000;
 		}
 		
 		#pause_menu {
@@ -76,6 +76,7 @@ $(document).ready(function(){
 	game.state.add('Preloader', BasicGame.Preloader);
 	game.state.add('TitleScreen', BasicGame.TitleScreen);
 	game.state.add('MainMenu', BasicGame.MainMenu);
+	game.state.add('StoryOpen', BasicGame.StoryOpen);
 	game.state.add('StoryScene1', BasicGame.StoryScene1);
 	game.state.add('StoryScene2', BasicGame.StoryScene2);
 	game.state.add('StoryScene3', BasicGame.StoryScene3);
@@ -96,31 +97,19 @@ $(document).ready(function(){
 		'games_unlocked': 0,
 		'load_saved_state': false,
 		'saved_state': '',
-		'saved_level': 0
+		'saved_level': 0,
+		'num_levels': 1
 	};
-	
-	// Mini game order
-	game.mini_game_order = [
-		{'title': 'Horse Game',
-			'state': 'HorseGame',
-			'thumbnail': ''},
-		{'title': 'Platform game',
-			'state': 'PlatformGame',
-			'thumbnail': ''},
-		{'title': 'Side Scroller Game',
-			'state': 'SideScrollerGame',
-			'thumbnail': ''}
-	];
 	
 	// Story mode state order
 	game.story_mode_state_order = [
+		'StoryOpen',
+		'HorseGame',
 		'StoryScene1',
-		game.mini_game_order[0].state,
+		'SideScrollerGame',
 		'StoryScene2',
-		game.mini_game_order[1].state,
+		'BossGame',
 		'StoryScene3',
-		game.mini_game_order[2].state,
-		'StoryScene4',
 		'Credits'
 	];
 	
@@ -189,6 +178,7 @@ $(document).ready(function(){
 			var answer_button_text = this.game.add.text(40, 36, value, {font: '40px kenvector_future', fill: '#fff', align: 'center'});
 			answer_button_text.anchor.setTo(0.5, 0.5);
 			answer_button.addChild(answer_button_text);
+			answer_button.fixedToCamera = true;
 			
 			answer_button_group.add(answer_button);
 		}
@@ -261,12 +251,20 @@ $(document).ready(function(){
 	
 	// Pause menu stuff
 	game.pause = function() {
+		this.pause();
 		this.game.state.pause();
 		$('canvas').hide();
 		$('#pause_menu').dialog('open');
 	};
 	
 	game.unpause = function() {
+		game.state.states[game.state.current].unpause();
+		$('canvas').show();
+		this.paused = false;
+	};
+	
+	game.restartLevel = function() {
+		game.state.states[game.state.current].startLevel();
 		$('canvas').show();
 		this.paused = false;
 	};
@@ -275,7 +273,8 @@ $(document).ready(function(){
 		autoOpen: false,
 		height: 250,
 		width: 250,
-		modal: true
+		modal: true,
+		closeOnEscape: false
 	});
 	
 	$('.ui-dialog-titlebar').hide();
@@ -291,6 +290,7 @@ $(document).ready(function(){
 	
 	$('#restart_level').click(function(){
 		$('#pause_menu').dialog('close');
+		game.restartLevel();
 		// game.unpause();
 		// console.log(game.state.current);
 	});
