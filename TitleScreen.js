@@ -6,15 +6,19 @@ BasicGame.TitleScreen.prototype = {
 	},
 	
 	create: function() {
-		console.log('TitleScreen');
-		console.log('Overall score = ' + this.game.global_vars.player_overall_score);
-		this.game.global_vars.player_overall_score = 500;
+		// console.log('TitleScreen');
+		// console.log('Overall score = ' + this.game.global_vars.player_overall_score);
+		// this.game.global_vars.player_overall_score = 500;
 		
-		this.game.add.text(0, 0, 'Title Screen', {font: '64px arial', fill: '#fff', align: 'center'});
+		// this.game.add.text(0, 0, 'Title Screen', {font: '64px arial', fill: '#fff', align: 'center'});
+				
+		this.game.add.sprite(0, 0, 'title_screen');
 		
-		start_button = this.game.add.button(0, 100, 'button', this.clickStart, this, 2, 1, 0);
-		start_button_text = this.game.add.text(0, 0, 'Click to Start!', {font: '20px Arial', fill: '#fff', align: 'center'});
-		start_button.addChild(start_button_text);
+		this.start_button = this.game.add.button(this.game.world.centerX, this.game.world.centerY + 100, 'yellow_buttons', this.clickStart, this, 3, 3, 4);
+		this.start_button.anchor.setTo(0.5, 0.5);
+		this.start_text = this.game.add.text(0, 0, 'Click to start!', {font: '12pt kenvector_future', fill: '#fff', align: 'center'});
+		this.start_text.anchor.setTo(0.5, 0.5);
+		this.start_button.addChild(this.start_text);
 	},
 	
 	update: function() {

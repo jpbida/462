@@ -6,38 +6,55 @@ BasicGame.MainMenu.prototype = {
 	},
 	
 	create: function() {
-		console.log('Main Menu');
-		console.log('Overall score = ' + this.game.global_vars.player_overall_score);
+		// console.log('Main Menu');
+		// console.log('Overall score = ' + this.game.global_vars.player_overall_score);
 		
-		this.game.add.text(0, 0, 'Main menu', {fill: '#fff', font: '65px arial', align: 'center'});
-		
-		// Load game button
-		button_offset = 0;
-		if ($.cookie('saved_state') != null && $.cookie('saved_state') != '') {
-			console.log($.cookie('saved_state'));	
-			button_offset = 100;
-			load_game_button = this.game.add.button(0, 100, 'button', this.loadSavedState, this, 2, 1, 0);
-			load_game_button_text = this.game.add.text(0, 0, 'Load saved game', {font: '20px Arial', fill: '#fff', align: 'center'});
-			load_game_button.addChild(load_game_button_text);
-		} else {
-			console.log(this.game.global_vars.saved_state);
-		}
-		
-		// Start new story mode
-		story_mode_button = this.game.add.button(0, button_offset + 100, 'button', this.startStoryMode, this, 2, 1, 0);
-		if (this.game.global_vars.saved_state == '') {
-			story_mode_button_text = 'Start story mode!';
-		} else {
-			story_mode_button_text = 'Restart story mode!';
-		}
-		story_mode_button.addChild(this.game.add.text(0, 0, story_mode_button_text, {font: '20px Arial', fill: '#fff', align: 'center'}));
+		// Background
+		this.game.add.sprite(0, 0, 'main_menu_bg');
 		
 		// Mini game buttons
-		for (var i = 0; i < 3; i++) {
+		if ($.cookie('HorseGame') == 'true') {
+			this.game.add.button(0 * (254 + 100) + 159, 195, 'race_button', this.startRaceGame, this);
+		} else {
+			this.game.add.sprite(0 * (254 + 100) + 159, 195, 'race_button_locked');
 		}
+		
+		if ($.cookie('SideScrollerGame') == 'true') {
+			this.game.add.button(1 * (254 + 100) + 159, 195, 'sidescroll_button', this.startSideScrollerGame, this);
+		} else {
+			this.game.add.sprite(1 * (254 + 100) + 159, 195, 'sidescroll_button_locked');
+		}
+		
+		if ($.cookie('BossGame') == 'true') {
+			this.game.add.button(2 * (254 + 100) + 159, 195, 'boss_button', this.startBossGame, this);
+		} else {
+			this.game.add.sprite(2 * (254 + 100) + 159, 195, 'boss_button_locked');
+		}
+		
+		// Load saved state
+		if ($.cookie('saved_state') != null && $.cookie('saved_state') != '') {
+			load_game_button = this.game.add.button(288, 545, 'resume_button', this.loadSavedState, this);
+		} else {
+			this.game.add.sprite(288, 545, 'resume_button_locked');
+		}
+		
+		// Start story mode
+		story_mode_button = this.game.add.button(this.game.width - 590, 545, 'story_button', this.startStoryMode, this);
 	},
 	
 	update: function() {
+	},
+	
+	startRaceGame: function() {
+		this.game.state.start('HorseGame');
+	},
+	
+	startSideScrollerGame: function() {
+		this.game.state.start('SideScrollerGame');
+	},
+	
+	startBossGame: function() {
+		this.game.state.start('BossGame');
 	},
 	
 	startStoryMode: function() {
@@ -58,5 +75,11 @@ BasicGame.MainMenu.prototype = {
 		console.log('- saved level: ' + this.game.global_vars.saved_level);
 		
 		this.game.state.start(this.game.global_vars.saved_state);
+	},
+	
+	pause: function() {
+	},
+	
+	unpause: function() {
 	}
 };
