@@ -162,8 +162,7 @@ BasicGame.StoryOpen.prototype = {
 			function(){
 				var newspaper = this.add_sprite(this.game.world.centerX, this.game.world.centerY, 'cutscene_opener_newspaper2');
 				newspaper.anchor.setTo(0.5, 0.5);
-				// this.playLine('story_Znewspaper');
-				this.next();
+				this.playLine('story_Znewspaper');
 			},
 			function(){
 				this.zizo.frame = 0;
@@ -216,28 +215,22 @@ BasicGame.StoryOpen.prototype = {
 	}
 };
 
-/* Scene #1 -- between first and second mini game */
-BasicGame.StoryScene1 = function (game) {
-	this.state_label = 'StoryScene1';
-};
-
-BasicGame.StoryScene1.prototype = {
-	preload: function() {
-	},
-	
-	create: function() {
-		this.game.add.text(0, 0, 'Story scene #1 -- \nbetween game #1 and game #2', {font: '65px arial', fill: '#fff'});
-		console.log('story scene #2');
-		this.game.input.onDown.add(this.game.goToNextState, this);
-	},
-	
-	update: function() {
-	}
-};
-
 /* Scene #2 -- between first and second mini game */
+// After winning the flying car. Arriving to castle. Inside castle. Going inside castle.
 BasicGame.StoryScene2 = function (game) {
 	this.state_label = 'StoryScene2';
+	this.lines = [];
+	this.current_line_index = 0;
+	this.current_line = null;
+	this.zizo = null;
+	this.zizocar = null;
+	this.tree = null;
+	this.umbrella = null;
+	this.kma = null;
+	this.bubble = null;
+	this.part_sprites = null;
+	this.parts = [];
+	this.current_part = 0;
 };
 
 BasicGame.StoryScene2.prototype = {
@@ -247,16 +240,107 @@ BasicGame.StoryScene2.prototype = {
 	create: function() {
 		this.game.add.text(0, 0, 'Story scene #2 -- \nbetween game #1 and game #2', {font: '65px arial', fill: '#fff'});
 		console.log('story scene #2');
-		this.game.input.onDown.add(this.game.goToNextState, this);
+		//this.game.input.onDown.add(this.game.goToNextState, this);
+		
+		this.game.add.sprite(0, 0, 'cutscene_opener_bg');
+		this.tree = this.game.add.sprite(1000, 265, 'cutscene_opener_big_tree');
+		this.zizocar = this.game.add.sprite(200, 350, 'zizocar');
+		this.part_sprites = this.game.add.group();
+		
+		this.parts = this.createParts();
+		
+		// this.current_part=10;
+		this.playNextPart();
+	},
+	
+	playLine: function(key) {
+		this.current_line = this.game.add.audio(key);
+		this.current_line.onStop.add(this.playNextPart, this);
+		this.current_line.play();
+	},
+	
+	createParts: function() {
+		return [
+			'',
+			function() {		
+				this.zizocar.body.velocity.x = 200;
+				this.part_sprites.add(this.game.add.sprite(170, 170, 'cutscene_3_z1'));
+				this.playLine('story_Zaddi');
+			}/*
+			function() {
+				this.part_sprites.add(this.game.add.sprite(715, 125, 'cutscene_3_a1'));
+				this.playLine('story_Azizo');
+			},
+			function() {		
+				this.part_sprites.add(this.game.add.sprite(660, 200, 'cutscene_3_km1'));
+				this.playLine('story_KMwell');
+			},
+			function() {		
+				this.part_sprites.add(this.game.add.sprite(170, 170, 'cutscene_3_z2'));
+				this.playLine('story_Zlethergo');
+			},
+			function() {		
+				this.part_sprites.add(this.game.add.sprite(660, 200, 'cutscene_3_km2'));
+				this.playLine('story_KMtry');
+			},
+			function(){
+				var black = this.add_sprite(0, 0, 'black_screen');
+				black.alpha = 0;
+				var fade_black = this.game.add.tween(black).to({alpha: 1}, 1000, Phaser.Easing.Exponential.out, false);
+				fade_black.onComplete.add(this.playNextPart, this);
+				fade_black.start();
+			}*/
+		];
+	},
+	
+	add_sprite: function(x, y, key) {
+		return this.part_sprites.add(this.game.add.sprite(x, y, key));
+	},
+	
+	next: function() {
+		this.game.input.onDown.add(this.playNextPart, this);
+	},
+	
+	playNextPart: function() {
+		this.removeSprites();
+		this.current_part++;
+		
+		if (this.current_part >= this.parts.length) {
+			console.log('here');
+			this.game.goToNextState.call(this);
+		} else {		
+			console.log(this.current_part + ' ' + this.parts.length);
+			this.parts[this.current_part].call(this);
+		}
+	},
+	
+	removeSprites: function() {
+		this.part_sprites.destroy();
+		this.part_sprites = this.game.add.group();
+	},
+	
+	playNextLine: function() {
+		this.current_line = this.lines[this.current_line_index];
+		this.current_line.play();
+		this.current_line_index++;
 	},
 	
 	update: function() {
 	}
 };
 
-/* Scene #3 -- between second and third mini game */
 BasicGame.StoryScene3 = function (game) {
 	this.state_label = 'StoryScene3';
+	// Scene before Boss Fight
+	this.lines = [];
+	this.current_line_index = 0;
+	this.current_line = null;
+	this.zizo = null;
+	this.kma = null;
+	this.bubble = null;
+	this.part_sprites = null;
+	this.parts = [];
+	this.current_part = 0;
 };
 
 BasicGame.StoryScene3.prototype = {
@@ -264,9 +348,90 @@ BasicGame.StoryScene3.prototype = {
 	},
 	
 	create: function() {
-		this.game.add.text(0, 0, 'Story scene #3 -- \nbetween game #2 and game #3', {font: '65px arial', fill: '#fff'});
-		console.log('story scene #3');
-		this.game.input.onDown.add(this.game.goToNextState, this);
+		this.game.add.sprite(0, 0, 'cutscene_3_bg');
+		
+		this.zizo = this.game.add.sprite(200, 445, 'zizo');
+		this.zizo.anchor.setTo(1, 1);
+		this.zizo.frame = 6;
+		this.zizo.animations.add('run', [9, 10], 5, true);
+
+		
+		this.part_sprites = this.game.add.group();
+		this.parts = this.createParts();
+		
+		// this.current_part=10;
+		this.playNextPart();
+	},
+	
+	playLine: function(key) {
+		this.current_line = this.game.add.audio(key);
+		this.current_line.onStop.add(this.playNextPart, this);
+		this.current_line.play();
+	},
+	
+	createParts: function() {
+		return [
+			'',
+			function() {		
+				this.part_sprites.add(this.game.add.sprite(170, 170, 'cutscene_3_z1'));
+				this.playLine('story_Zaddi');
+			},
+			function() {
+				this.part_sprites.add(this.game.add.sprite(760, 120, 'cutscene_3_a1'));
+				this.playLine('story_Azizo');
+			},
+			function() {		
+				this.part_sprites.add(this.game.add.sprite(680, 200, 'cutscene_3_km1'));
+				this.playLine('story_KMwell');
+			},
+			function() {		
+				this.part_sprites.add(this.game.add.sprite(170, 170, 'cutscene_3_z2'));
+				this.playLine('story_Zlethergo');
+			},
+			function() {		
+				this.part_sprites.add(this.game.add.sprite(660, 200, 'cutscene_3_km2'));
+				this.playLine('story_KMtry');
+			},
+			function(){
+				var black = this.add_sprite(0, 0, 'black_screen');
+				black.alpha = 0;
+				var fade_black = this.game.add.tween(black).to({alpha: 1}, 1000, Phaser.Easing.Exponential.out, false);
+				fade_black.onComplete.add(this.playNextPart, this);
+				fade_black.start();
+			}
+		];
+	},
+	
+	add_sprite: function(x, y, key) {
+		return this.part_sprites.add(this.game.add.sprite(x, y, key));
+	},
+	
+	next: function() {
+		this.game.input.onDown.add(this.playNextPart, this);
+	},
+	
+	playNextPart: function() {
+		this.removeSprites();
+		this.current_part++;
+		
+		if (this.current_part >= this.parts.length) {
+			console.log('here');
+			this.game.goToNextState.call(this);
+		} else {		
+			console.log(this.current_part + ' ' + this.parts.length);
+			this.parts[this.current_part].call(this);
+		}
+	},
+	
+	removeSprites: function() {
+		this.part_sprites.destroy();
+		this.part_sprites = this.game.add.group();
+	},
+	
+	playNextLine: function() {
+		this.current_line = this.lines[this.current_line_index];
+		this.current_line.play();
+		this.current_line_index++;
 	},
 	
 	update: function() {
@@ -276,6 +441,18 @@ BasicGame.StoryScene3.prototype = {
 /* Scene #4 -- end scene, after last mini game */
 BasicGame.StoryScene4 = function (game) {
 	this.state_label = 'StoryScene4';
+	this.lines = [];
+	this.current_line_index = 0;
+	this.current_line = null;
+	this.zizo = null;
+	this.addi = null;
+	this.km = null;
+	this.kma = null;
+	this.tree = null;
+	this.bubble = null;
+	this.part_sprites = null;
+	this.parts = [];
+	this.current_part = 0;
 };
 
 BasicGame.StoryScene4.prototype = {
@@ -283,9 +460,100 @@ BasicGame.StoryScene4.prototype = {
 	},
 	
 	create: function() {
-		this.game.add.text(0, 0, 'Story scene #4 -- \nend/win scene after game #3', {font: '65px arial', fill: '#fff'});
-		console.log('story scene #4');
-		this.game.input.onDown.add(this.game.goToNextState, this);
+		//this.game.add.text(0, 0, 'Story scene #4 -- \nend/win scene after game #3', {font: '65px arial', fill: '#fff'});
+		//console.log('story scene #4');
+		//this.game.input.onDown.add(this.game.goToNextState, this);
+		
+		this.game.add.sprite(0, 0, 'cutscene_4_bg');
+		
+		this.zizo = this.game.add.sprite(600, 445, 'zizo');
+		this.zizo.anchor.setTo(1, 1);
+		this.zizo.frame = 6;
+		this.zizo.animations.add('run', [9, 10], 5, true);
+		
+		this.addi = this.game.add.sprite(700, 445, 'addi');
+		this.addi.anchor.setTo(0, 1);
+		this.addi.frame = 6;
+		this.addi.scale.x = -1;
+		this.addi.animations.add('run', [9, 10], 5, true);
+		this.part_sprites = this.game.add.group();
+		this.parts = this.createParts();
+		
+		// this.current_part=10;
+		this.playNextPart();
+		
+	},
+	
+	playLine: function(key) {
+		this.current_line = this.game.add.audio(key);
+		this.current_line.onStop.add(this.playNextPart, this);
+		this.current_line.play();
+	},
+	
+	createParts: function() {
+		return [
+			'',
+			function() {		
+				this.part_sprites.add(this.game.add.sprite(650, 170, 'cutscene_4_addi1'));
+				this.playLine('story_AddiThanks');
+			},
+			function() {
+				this.part_sprites.add(this.game.add.sprite(200, 170, 'cutscene_4_zizo1'));
+				this.playLine('story_ZizoAreYouOkay');
+			},
+			function() {		
+				this.part_sprites.add(this.game.add.sprite(650, 170, 'cutscene_4_addi2'));
+				this.playLine('story_AddiGoHome');
+			},
+			function() {		
+				this.zizo.body.velocity.x = -150;
+				this.zizo.scale.x = -1;
+				this.zizo.play('run');
+				this.addi.body.velocity.x = -150;
+				this.addi.play('run');
+				this.part_sprites.add(this.game.add.sprite(745, 220, 'cutscene_4_km1'));
+				this.playLine('story_KMCurse');
+			},
+			function(){
+				var black = this.add_sprite(0, 0, 'black_screen');
+				black.alpha = 0;
+				var fade_black = this.game.add.tween(black).to({alpha: 1}, 1000, Phaser.Easing.Exponential.out, false);
+				fade_black.onComplete.add(this.playNextPart, this);
+				fade_black.start();
+			}
+		];
+	},
+	
+	add_sprite: function(x, y, key) {
+		return this.part_sprites.add(this.game.add.sprite(x, y, key));
+	},
+	
+	next: function() {
+		this.game.input.onDown.add(this.playNextPart, this);
+	},
+	
+	playNextPart: function() {
+		this.removeSprites();
+		this.current_part++;
+		
+		if (this.current_part >= this.parts.length) {
+			console.log('here');
+			this.game.goToNextState.call(this);
+		} else {		
+			console.log(this.current_part + ' ' + this.parts.length);
+			this.parts[this.current_part].call(this);
+		}
+	},
+	
+	removeSprites: function() {
+		this.part_sprites.destroy();
+		this.part_sprites = this.game.add.group();
+	},
+	
+	playNextLine: function() {
+		this.current_line = this.lines[this.current_line_index];
+		this.current_line.play();
+		this.current_line_index++;
 	},
 	
 	update: function() {

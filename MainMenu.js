@@ -6,7 +6,7 @@ BasicGame.MainMenu.prototype = {
 	},
 	
 	create: function() {
-		// console.log('Main Menu');
+		console.log('Main Menu');
 		// console.log('Overall score = ' + this.game.global_vars.player_overall_score);
 		
 		// Background

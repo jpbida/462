@@ -39,6 +39,12 @@ BasicGame.BossGame = function (game) {
 	this.lasers = null;
 	this.hands = 0;
 	this.kinglives = 3;
+	
+	this.instructions = null;
+	this.scoreboard = null;
+	
+	this.win_sound = null;
+	this.lose_sound = null;
 };
 
 BasicGame.BossGame.prototype = {
@@ -58,6 +64,9 @@ BasicGame.BossGame.prototype = {
 		this.rocksound = this.game.add.audio('rocksound');
 		this.right_answer_sound = this.game.add.audio('right_answer_sound');
 		this.wrong_answer_sound = this.game.add.audio('wrong_answer_sound');
+		this.win_sound = this.game.add.audio('win_sound');
+		this.lose_sound = this.game.add.audio('lose_sound');
+		
 		// Manage Layers
 		this.background_layer = this.game.add.group();
 		this.background_layer.z = 0;
@@ -81,14 +90,11 @@ BasicGame.BossGame.prototype = {
 		// Create Zizo
 		//this.zizo = this.game.add.sprite(this.starting_line_position, this.game.world.height - 25, 'zizo');
 		this.zizo = this.game.add.sprite(337, 443, 'zizo');
-		//this.zizo.body.gravity.y = 6;
 		this.zizo.anchor.setTo(.5, 1);
 		this.zizo.animations.add('wait', [0], 1, false);
 		this.zizo.animations.add('on_mark', [6], 1, false);
 		this.zizo.animations.add('get_set', [3], 1, false);
 		this.zizo.animations.add('run', [9, 10], 5, true);
-		this.zizo.play('wait');
-		this.zizo.body.velocity.x = 0;
 		
 		this.king = this.game.add.sprite(1100, 443, 'king');
 		this.king.anchor.setTo(1, 1);
@@ -96,6 +102,30 @@ BasicGame.BossGame.prototype = {
 		this.king.animations.add('move', [0, 1], 3, true);
 		this.king.animations.add('hands', [2], 1, false);
 		this.king.play('stand');
+		
+		// Instructions
+		this.instructions = this.game.add.sprite(0, 0, 'boss_instructions');
+		
+		this.start_button = this.game.add.button(this.game.world.centerX, this.game.world.height - 90, 'yellow_buttons', this.killInstructions, this, 3, 3, 4);
+		this.start_button.alpha = 0;
+		this.start_button.anchor.setTo(0.5, 0.5);
+		this.start_text = this.game.add.text(4, 0, 'START', {font: '30pt kenvector_future', fill: '#000', align: 'center'});
+		this.start_text.anchor.setTo(0.5, 0.5);
+		this.start_button.addChild(this.start_text);
+		
+		// Initialize scoreboard
+		this.scoreboard = this.game.add.group();
+		
+		var instruction_audio = this.game.add.audio('boss_instruction_sound');
+		instruction_audio.onStop.add(function(){
+			this.game.add.tween(this.start_button).to({alpha: 1}, 500, null, true);
+		}, this);
+		instruction_audio.play();
+	},
+	
+	killInstructions: function() {
+		this.start_button.destroy();
+		this.instructions.destroy();
 		this.startLevel();
 	},
 
@@ -190,7 +220,7 @@ BasicGame.BossGame.prototype = {
 		}
 		this.game.physics.overlap(this.zizo, this.guns, this.collectGun, null, this);
 		this.game.physics.overlap(this.king, this.lasers, this.collectLaser, null, this);
-		//this.game.physics.overlap(this.zizo, this.rocks, this.loseRace, null, this);
+		this.game.physics.overlap(this.zizo, this.rocks, this.loseRace, null, this);
 		
 		if (this.kinglives == 0) {
 			this.winRace();
@@ -203,9 +233,21 @@ BasicGame.BossGame.prototype = {
 			this.end_text.destroy();
 		}
 
-		//this.zizo.x = this.starting_line_position;
 		this.zizo.play('wait');
-
+		this.zizo.x = 337;
+		this.zizo.body.velocity.x = 0;
+		this.king.play('stand');
+		this.kinglives = 3;
+		this.started = false;
+		this.gametime1 = 0;
+		this.gametime2 = 1;
+		this.gunExists = false;
+		this.rocks.destroy();
+		this.rocks = this.game.add.group();
+		this.guns.destroy();
+		this.guns = this.game.add.group();
+		this.lasers.destroy();
+		this.lasers = this.game.add.group();
 	},
 	
 	collectGun: function(zizo, gun) {
@@ -225,6 +267,8 @@ BasicGame.BossGame.prototype = {
 	},
 	
 	startLevel: function() {
+		this.scoreboard.destroy();
+		
 		if (this.game.global_vars.load_saved_state) {
 			this.current_level = this.game.global_vars.saved_level;
 			this.game.global_vars.load_saved_state = false;
@@ -237,27 +281,13 @@ BasicGame.BossGame.prototype = {
 
 		// Reset characters
 		this.reset();
-		// Start button,when pressed will call startCountDown
-		this.start_button = this.game.add.button(this.game.world.centerX, this.game.world.centerY, 'yellow_buttons', this.startCountDown, this, 3, 3, 4);
-		this.start_button.anchor.setTo(0.5, 0.5);
-		this.start_text = this.game.add.text(0, 0, 'Click to start!', {font: '12pt kenvector_future', fill: '#fff', align: 'center'});
-		this.start_text.anchor.setTo(0.5, 0.5);
-		this.start_button.addChild(this.start_text);
+		this.startRace();
 
-	},
-
-	startCountDown: function() {
-		this.start_button.destroy();
-
-		var this_ref = this;
-
-		this.zizo.play('on_mark');
-		this_ref.startRace.call(this_ref);
-		
 	},
 
 	startRace: function() {
 		this.started = true;
+		this.zizo.play('on_mark');
 		this.displayNewProblem();
 		this.displayNewProblem2();
 		this.displayNewProblem3();
@@ -338,18 +368,19 @@ BasicGame.BossGame.prototype = {
 		
 	},
 
-
-
 	winRace: function() {
 		if (!this.started) {
 			return;
 		}
 
-		//this.endRace();
-		this.end_text = this.game.add.text(this.game.world.centerX, 40, 'You win!', this.text_style);
-		this.end_text.anchor.setTo(0.5, 0);
-
-		this.game.input.onDown.addOnce(this.finishLevel, this);
+		this.endRace();
+		
+		var black = this.game.add.sprite(0, 0, 'black_screen');
+		black.alpha = 0;
+		this.win_sound.play();
+		var fade_black = this.game.add.tween(black).to({alpha: 1}, 3000, null, false);
+		fade_black.onComplete.add(this.winGame, this);
+		fade_black.start();
 	},
 
 	loseRace: function() {
@@ -358,10 +389,28 @@ BasicGame.BossGame.prototype = {
 		}
 
 		this.endRace();
-		this.end_text = this.game.add.text(this.game.world.centerX, 40, 'You lose :( Try again!', this.text_style);
-		this.end_text.anchor.setTo(0.5, 0);
-
-		this.game.input.onDown.addOnce(this.startLevel, this);
+		this.lose_sound.play();
+		this.showScoreboard(false);
+	},
+	
+	showScoreboard: function(win) {
+		this.scoreboard = this.game.add.group();
+		
+		this.scoreboard.add(this.game.add.sprite(0, 0, 'score_board'));
+		var start_button = null;
+		
+		
+		start_button = this.game.add.button(this.game.world.centerX, this.game.world.height - 100, 'yellow_buttons', this.startLevel, this, 3, 3, 4);
+		start_button.anchor.setTo(0.5, 0.5);
+		start_text = this.game.add.text(4, 0, 'Try Again', {font: '20pt kenvector_future', fill: '#000', align: 'center'});
+		start_text.anchor.setTo(0.5, 0.5);
+		start_button.addChild(start_text)
+		
+		var header = this.game.add.text(this.game.world.centerX, this.game.world.centerY - 100, 'You lose...', {font: '75pt kenvector_future', fill: '#fff', align: 'center'});
+		header.anchor.setTo(0.5, 0);
+		
+		this.scoreboard.add(start_button);
+		this.scoreboard.add(header);
 	},
 
 	endRace: function() {
@@ -370,6 +419,7 @@ BasicGame.BossGame.prototype = {
 
 		this.zizo.body.velocity.x = 0;
 		this.zizo.animations.play('wait');
+		this.background_music.stop();
 		//this.opponents.setAll('body.velocity.x', 0);
 		//this.opponents.callAll('play', null, 'wait');
 	},
@@ -395,21 +445,18 @@ BasicGame.BossGame.prototype = {
 
 		// Unlock this mini game
 		this.game.unlockMiniGame(this.state_label);
-
 		this.game.goToNextState.call(this);
 	},
 
 	shutdown: function() {
 		console.log('shutdown');
-		console.log(this.zizo.body.velocity.x);
+		// console.log(this.zizo.body.velocity.x);
 		// this.background_layer.destroy();
 		// this.answer_button_group.destory();
 		// this.ui_layer.destroy();
 		// this.zizo.destroy();
 		// this.opponents.destroy();
 		// this.finish_line.destroy();
-		this.zizo.body.velocity.x = 0;
-		this.opponents.setAll('body.velocity.x', 0);
 		console.log(this.zizo.body.velocity.x);
 	}
 };

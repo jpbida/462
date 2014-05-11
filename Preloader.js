@@ -30,13 +30,16 @@ BasicGame.Preloader.prototype = {
 		this.game.load.image('bg_green2', 'assets/racing_game/bg_green2.png');
 		this.game.load.image('bg_green3', 'assets/racing_game/bg_green3.png');
 		this.game.load.image('bg_boss', 'assets/boss_game/bg_boss.png');
-
+		
 		// Instructions
 		this.game.load.image('boss_instructions', 'assets/instructions/bossinstructions.png');
 		this.game.load.image('jump_instructions', 'assets/instructions/jumpinstructions.png');
 		this.game.load.image('race_instructions', 'assets/instructions/raceinstructions.png');
 		this.game.load.image('scroller_instructions', 'assets/instructions/scrollerinstructions.png');
 		this.game.load.image('score_board', 'assets/score_board.png');
+		this.game.load.audio('race_instruction_sound', 'assets/instructions/raceinstruct.ogg');
+		this.game.load.audio('scroller_instruction_sound', 'assets/instructions/scrollinstruct.ogg');
+		this.game.load.audio('boss_instruction_sound', 'assets/instructions/bossinstruct.ogg');
 		
 		// User interfaces
 		this.game.load.spritesheet('button', 'assets/buttons.png', 193, 71);
@@ -47,6 +50,7 @@ BasicGame.Preloader.prototype = {
 		this.game.load.image('pause_icon', 'assets/ui/pause_icon.png');
 		this.game.load.image('black_screen', 'assets/black.png');
 		this.game.load.image('white_screen', 'assets/white_screen.png');
+		this.game.load.image('q_bg', 'assets/qborder.png');
 		
 		// Player sprites
 		this.game.load.atlasXML('zizo', 'assets/aliens/alienGreen.png', 'assets/aliens/alienGreen.xml');
@@ -107,6 +111,35 @@ BasicGame.Preloader.prototype = {
 		this.game.load.audio('story_Zmillionmiles', 'assets/cutscenes/open/Zmillionmiles.ogg');
 		this.game.load.audio('story_swish', 'assets/cutscenes/open/swish.ogg');
 		this.game.load.audio('story_wind', 'assets/cutscenes/open/wind.ogg');
+		this.game.load.audio('story_Znewspaper', 'assets/cutscenes/open/Zracetomorrow.ogg');
+		
+		// Scene 2 (after winning flying car, arriving at castle, inside castle) files
+		this.game.load.image('zizocar', 'assets/cutscenes/2/flyingcar.png');
+		
+		// Scene 3 (before boss fight) files
+		this.game.load.image('cutscene_3_bg', 'assets/cutscenes/3/scene3_low.png');
+		this.game.load.image('cutscene_3_z1', 'assets/cutscenes/3/z_bf1.png');
+		this.game.load.image('cutscene_3_z2', 'assets/cutscenes/3/z_bf2.png');
+		this.game.load.image('cutscene_3_a1', 'assets/cutscenes/3/a_bf1.png');
+		this.game.load.image('cutscene_3_km1', 'assets/cutscenes/3/km_bf1.png');
+		this.game.load.image('cutscene_3_km2', 'assets/cutscenes/3/km_bf2.png');
+		this.game.load.audio('story_Zaddi', 'assets/cutscenes/3/Z-addi.ogg');
+		this.game.load.audio('story_Zlethergo', 'assets/cutscenes/3/Z-lethergo.ogg');
+		this.game.load.audio('story_Azizo', 'assets/cutscenes/3/Addi-3.mp3');
+		this.game.load.audio('story_KMwell', 'assets/cutscenes/3/KmWellWellWell.mp3');
+		this.game.load.audio('story_KMtry', 'assets/cutscenes/3/KmTryAndStopMe.mp3');
+		
+		
+		// Scene 4 (end scene) files
+		this.game.load.image('cutscene_4_bg', 'assets/cutscenes/4/scene4.png');
+		this.game.load.image('cutscene_4_addi1', 'assets/cutscenes/4/a_dia1.png');
+		this.game.load.image('cutscene_4_addi2', 'assets/cutscenes/4/a_dia2.png');
+		this.game.load.image('cutscene_4_zizo1', 'assets/cutscenes/4/z_dia1.png');
+		this.game.load.image('cutscene_4_km1', 'assets/cutscenes/4/km_dia1.png');
+		this.game.load.audio('story_AddiThanks', 'assets/cutscenes/4/Addi-4.mp3');
+		this.game.load.audio('story_AddiGoHome', 'assets/cutscenes/4/Addi-5.mp3');
+		this.game.load.audio('story_ZizoAreYouOkay', 'assets/cutscenes/4/Z-areuok.ogg');
+		this.game.load.audio('story_KMCurse', 'assets/cutscenes/4/KmCurseYou.mp3');
 	},
 	
 	create: function() {
@@ -116,13 +149,13 @@ BasicGame.Preloader.prototype = {
 		//	Once the load has finished we disable the crop because we're going to sit in the update loop for a short while as the music decodes
 		this.preloadBar.cropEnabled = false;
 		
-		
-		
 		this.game.state.start('TitleScreen');
+		// this.game.state.start('StoryScene3');
 		// this.game.state.start('MainMenu');
 		// this.game.state.start('SideScrollerGame');
 		// this.game.state.start('HorseGame');
 		// this.game.state.start('PlatformGame');
 		// this.game.state.start('StoryOpen');
+		// this.game.state.start('BossGame');
 	}
 };

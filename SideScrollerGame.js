@@ -31,6 +31,7 @@ BasicGame.SideScrollerGame = function (game) {
 	
 	this.text_style = {font: '65px kenvector_future', fill: 'white', align: 'center'};
 	
+	this.problem_background = null;
 	this.problem_text = null;
 	this.answer = 0;
 	
@@ -39,6 +40,7 @@ BasicGame.SideScrollerGame = function (game) {
 	this.score = 0;
 	this.score_text = null;
 	this.high_score = 0;
+	this.scoreboard = null;
 	
 	// Enemies
 	this.enemy_spiders = null;
@@ -95,7 +97,7 @@ BasicGame.SideScrollerGame.prototype = {
 		this.answer_button_group.fixedToCamera = true;
 		
 		// Create answer buttons
-		var plus_button = this.game.add.button(320, 200, 'buttons', this.answerPlus, this, 20, 20, 20);
+		var plus_button = this.game.add.button(440, 300, 'buttons', this.answerPlus, this, 20, 20, 20);
 		var plus_button_text = this.game.add.text(50, 50, '+', {font: '40px kenvector_future', fill: '#fff', align: 'center'});
 		plus_button_text.anchor.setTo(0.5, 0.5);
 		plus_button.addChild(plus_button_text);
@@ -103,7 +105,7 @@ BasicGame.SideScrollerGame.prototype = {
 		plus_button.value = '+';
 		this.answer_button_group.add(plus_button);
 		
-		var minus_button = this.game.add.button(this.game.width - 420, 200, 'buttons', this.answerMinus, this, 20, 20, 20);
+		var minus_button = this.game.add.button(740, 300, 'buttons', this.answerMinus, this, 20, 20, 20);
 		var minus_button_text = this.game.add.text(50, 50, '-', {font: '40px kenvector_future', fill: '#fff', align: 'center'});
 		minus_button_text.anchor.setTo(0.5, 0.5);
 		minus_button.addChild(minus_button_text);
@@ -178,7 +180,7 @@ BasicGame.SideScrollerGame.prototype = {
 		this.zizo.animations.add('run', [9, 10], 5, true);
 		this.zizo.animations.add('die', [4], 1, false);
 		this.zizo.play('run');
-		// this.zizo.body.velocity.x = 200;
+		// this.zizo.body.velocity.x = 1000;
 	
 		this.game.camera.follow(this.zizo);
 		
@@ -191,21 +193,31 @@ BasicGame.SideScrollerGame.prototype = {
 		this.zizo.addChild(this.umbrella);
 		this.closeUmbrella();
 		
+		// Initialize Scoreboard
+		this.scoreboard = this.game.add.group();
+		
 		// Instructions
 		this.instructions = this.game.add.sprite(0, 0, 'scroller_instructions');
 		
 		this.start_button = this.game.add.button(640, this.game.world.height - 100, 'yellow_buttons', this.killInstructions, this, 3, 3, 4);
+		this.start_button.alpha = 0;
 		this.start_button.anchor.setTo(0.5, 0.5);
-		this.start_text = this.game.add.text(4, 0, 'START', {font: '30pt kenvector_future', fill: '#fff', align: 'center'});
+		this.start_text = this.game.add.text(4, 0, 'START', {font: '30pt kenvector_future', fill: '#000', align: 'center'});
 		this.start_text.anchor.setTo(0.5, 0.5);
 		this.start_button.addChild(this.start_text);
+		
+		var instruction_audio = this.game.add.audio('scroller_instruction_sound');
+		instruction_audio.onStop.add(function(){
+			this.game.add.tween(this.start_button).to({alpha: 1}, 500, null, true);
+		}, this);
+		instruction_audio.play();
 	},
 	
 	update: function() {
 		this.game.physics.collide(this.zizo,this.layer);
 		this.game.physics.overlap(this.umbrella, this.enemies, this.killEnemy, null, this);
-		this.game.physics.collide(this.zizo, this.enemies, this.zizoGetsHit, null, this);
-		this.game.physics.overlap(this.zizo, this.door, this.finishLevel, null, this);
+		// this.game.physics.collide(this.zizo, this.enemies, this.zizoGetsHit, null, this);
+		this.game.physics.overlap(this.zizo, this.door, this.winLevel, null, this);
 		
 		// Flicker torches
 		if (this.tilemap != null) {
@@ -254,7 +266,6 @@ BasicGame.SideScrollerGame.prototype = {
 		snake.play('wait');
 		
 		this.enemy_snakes.add(snake);
-		console.log(snake);
 	},
 	
 	killInstructions: function() {
@@ -265,6 +276,7 @@ BasicGame.SideScrollerGame.prototype = {
 	
 	startLevel: function() {
 		this.finished_level = false;
+		this.scoreboard.destroy();
 		
 		// Load level specific things
 		this.background = this.game.add.sprite(0, 0, this.level_images[this.current_level]['background']);
@@ -277,7 +289,8 @@ BasicGame.SideScrollerGame.prototype = {
 		
 		this.displayNewProblem();
 		
-		this.zizo.body.velocity.x = 200;
+		// this.zizo.body.velocity.x = 200;
+		this.zizo.body.velocity.x = 1000;
 	},
 	
 	pause: function() {
@@ -295,16 +308,15 @@ BasicGame.SideScrollerGame.prototype = {
 		var problem_text = problem.first_num + ' ? ' + problem.second_num + ' = ' + problem.answer;
 		this.answer = problem.operator;
 		
-		// if (this.problem_background == null || !this.problem_background.exists) {
-			// this.problem_background = this.game.add.graphics(this.game.world.centerX, 200);
-			// this.problem_background.anchor.setTo(0.5, 0.5);
-			// this.problem_background.lineStyle(2, 0x0000FF, 0.5);
-			// this.problem_background.beginFill(0x0000FF, 0.5);
-			// this.problem_background.drawRect(0, 0, 500, 250);
-		// }
+		if (this.problem_background == null || !this.problem_background.exists) {
+			this.problem_background = this.game.add.sprite(640, 120, 'q_bg');
+			this.problem_background.anchor.setTo(0.5, 0);
+			this.problem_background.alpha = 0.65;
+			this.problem_background.fixedToCamera = true;
+		}
 		
 		if (this.problem_text == null || !this.problem_text.exists) {
-			this.problem_text = this.game.add.text(640, 150, problem_text, {font: '65px kenvector_future', fill: '#fff'});
+			this.problem_text = this.game.add.text(640, 200, problem_text, {font: '65px kenvector_future', fill: '#fff', align: 'center'});
 			this.problem_text.anchor.setTo(0.5, 0.5);
 			this.problem_text.fixedToCamera = true;
 		} else {
@@ -323,7 +335,6 @@ BasicGame.SideScrollerGame.prototype = {
 	checkAnswer: function(answer) {
 		if (this.answer == answer) {
 			this.right_answer_sound.play();
-			this.displayNewProblem();
 			this.openUmbrella();
 			this.score += 100;
 		} else {
@@ -336,6 +347,7 @@ BasicGame.SideScrollerGame.prototype = {
 			}
 		}
 		
+		this.displayNewProblem();
 		this.score_text.setText(this.score);
 	},
 	
@@ -368,37 +380,102 @@ BasicGame.SideScrollerGame.prototype = {
 				this.already_dead = true;
 				this.background_music.stop();
 				this.lose_sound.play();
+				this.showScoreboard(false);
 			}
 		}
 	},
 	
-	finishLevel: function() {
-		if (!this.finished_level) {
-			this.background_music.stop();
-			this.win_sound.play();
-			this.zizo.body.velocity.x = 0;
-			// this.background_layer.remove(this.background);
-			// this.level_text.destroy();
+	winLevel: function() {
+		if (this.finished_level) {	
+			return;
+		}
 		
-			var new_pr = false;
-			if (this.score > this.high_score) {
-				new_pr = true;
-				$.cookie('scroller_high_score', this.score);
-				console.log('new high score = ' + this.score);
-				this.high_score = this.score;
-			}
+		this.finished_level = true;
+		this.background_music.stop();
+		this.win_sound.play();
+		this.zizo.body.velocity.x = 0;
+		this.showScoreboard(true);
+	},
+	
+	showScoreboard: function(win) {
+		this.problem_background.destroy();
+		this.scoreboard = this.game.add.group();
+		
+		var new_pr = false;
+		if (this.score > this.high_score) {
+			new_par = true;
+			$.cookie('race_high_score', this.score);
+			this.high_score = this.score;
+		}
+		
+		var scoreboard = this.game.add.sprite(this.game.camera.x, 0, 'score_board');
+		var result_header = '';
+		var result = '';
+		var start_button = null;
+		var start_text = '';
+		
+		var middle = this.game.camera.x + 640;
+		
+		if (win) {
+			result_header = 'You Win!!';
+		} else {
+			result_header = 'You Lose...';
+		}
+		
+		if (!this.game.global_vars.story_mode) {
+			start_button = this.game.add.button(middle, this.game.world.height - 100, 'yellow_buttons', this.winGame, this, 3, 3, 4);
+			start_button.anchor.setTo(0.5, 0.5);
+			start_text = this.game.add.text(4, 0, 'Menu', {font: '30pt kenvector_future', fill: '#000', align: 'center'});
+			start_text.anchor.setTo(0.5, 0.5);
+			start_button.addChild(start_text)
+		} else if (win) {
+			result_header = 'You Win!!';
+			start_button = this.game.add.button(middle, this.game.world.height - 100, 'yellow_buttons', this.finishLevel, this, 3, 3, 4);
+			start_button.anchor.setTo(0.5, 0.5);
+			start_text = this.game.add.text(4, 0, 'NEXT', {font: '30pt kenvector_future', fill: '#000', align: 'center'});
+			start_text.anchor.setTo(0.5, 0.5);
+			start_button.addChild(start_text)
+		} else {
+			result_header = 'You Lose...';
+			start_button = this.game.add.button(middle, this.game.world.height - 100, 'yellow_buttons', this.startLevel, this, 3, 3, 4);
+			start_button.anchor.setTo(0.5, 0.5);
+			start_text = this.game.add.text(4, 0, 'Try Again', {font: '20pt kenvector_future', fill: '#000', align: 'center'});
+			start_text.anchor.setTo(0.5, 0.5);
+			start_button.addChild(start_text)
+		}
+		
+		result = 'Score:\n' + this.score + '\n';
+		
+		if (new_pr) {
+			result += '**NEW**'
+		}
+		
+		result += ' High Score:\n' + this.high_score;
+		
+		var header = this.game.add.text(middle, 130, result_header, {font: '75pt kenvector_future', fill: '#fff', align: 'center'});
+		header.anchor.setTo(0.5, 0);
+		var text = this.game.add.text(middle, 290, result, this.text_style);
+		text.anchor.setTo(0.5, 0);
+		
+		// this.scoreboard.add(start_button);
+		// this.scoreboard.add(header);
+		// this.scoreboard.add(text);
+		
+		console.log(result);
+	},
+	
+	finishLevel: function() {
+		// this.background_layer.remove(this.background);
+		// this.level_text.destroy();
+		
+		if (this.current_level < this.game.global_vars.num_levels) {
+			this.current_level += 1;
 			
-			if (this.current_level < this.game.global_vars.num_levels) {
-				this.current_level += 1;
-				
-				this.game.saveGame(this.state_label, this.current_level);
-				
-				this.startLevel();
-			} else {
-				this.winGame();
-			}
+			this.game.saveGame(this.state_label, this.current_level);
 			
-			this.finished_level = true;
+			this.startLevel();
+		} else {
+			this.winGame();
 		}
 	},
 	
@@ -409,6 +486,11 @@ BasicGame.SideScrollerGame.prototype = {
 		// Unlock this mini game
 		this.game.unlockMiniGame(this.state_label);
 		
-		this.game.goToNextState.call(this);
+		if (!this.game.global_vars.story_mode) {
+			console.log('here');
+			this.game.state.start('MainMenu');
+		} else {
+			this.game.goToNextState.call(this);
+		}
 	}
 };

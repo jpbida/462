@@ -5,11 +5,12 @@
 	<title>Zizo and the Math Monsters</title>
 	<script src="js/jquery.min.js"></script>
 	<script src="js/jquery-ui.min.js"></script>
-	<script src="js/jquery.ba-outside-events.min.js"></script>
 	<script src="js/underscore-min.js"></script>
 	<script src="js/jquery.cookie.js"></script>
-	<!--<script src="js/phaser.min.js"></script>-->
-	<script src="http://cdnjs.cloudflare.com/ajax/libs/phaser/1.1.5/phaser.min.js"></script>
+	<script src="js/phaser_.min.js"></script>
+	<!--<script src="js/phaser.min.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/phaser/2.0.3/phaser.min.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/phaser/1.1.5/phaser.min.js"></script>-->
 	<script src="js/get_math_problem.js"></script>
 	<script src="Boot.js"></script>
 	<script src="Preloader.js"></script>
@@ -105,11 +106,11 @@ $(document).ready(function(){
 	game.story_mode_state_order = [
 		'StoryOpen',
 		'HorseGame',
-		'StoryScene1',
-		'SideScrollerGame',
 		'StoryScene2',
-		'BossGame',
+		'SideScrollerGame',
 		'StoryScene3',
+		'BossGame',
+		'StoryScene4',
 		'Credits'
 	];
 	
@@ -264,9 +265,7 @@ $(document).ready(function(){
 	};
 	
 	game.restartLevel = function() {
-		game.state.states[game.state.current].startLevel();
-		$('canvas').show();
-		this.paused = false;
+		game.state.start(game.state.current);
 	};
 	
 	$('#pause_menu').dialog({
@@ -291,8 +290,6 @@ $(document).ready(function(){
 	$('#restart_level').click(function(){
 		$('#pause_menu').dialog('close');
 		game.restartLevel();
-		// game.unpause();
-		// console.log(game.state.current);
 	});
 	
 	$('#main_menu').click(function(){
