@@ -289,8 +289,8 @@ BasicGame.SideScrollerGame.prototype = {
 		
 		this.displayNewProblem();
 		
-		// this.zizo.body.velocity.x = 200;
-		this.zizo.body.velocity.x = 1000;
+		this.zizo.body.velocity.x = 200;
+		// this.zizo.body.velocity.x = 1000;
 	},
 	
 	pause: function() {
