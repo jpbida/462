@@ -37,9 +37,9 @@ BasicGame.Preloader.prototype = {
 		this.game.load.image('race_instructions', 'assets/instructions/raceinstructions.png');
 		this.game.load.image('scroller_instructions', 'assets/instructions/scrollerinstructions.png');
 		this.game.load.image('score_board', 'assets/score_board.png');
-		this.game.load.audio('race_instruction_sound', 'assets/instructions/raceinstruct.ogg');
-		this.game.load.audio('scroller_instruction_sound', 'assets/instructions/scrollinstruct.ogg');
-		this.game.load.audio('boss_instruction_sound', 'assets/instructions/bossinstruct.ogg');
+		this.game.load.audio('race_instruction_sound', 'assets/instructions/Raceinstruct.ogg');
+		this.game.load.audio('scroller_instruction_sound', 'assets/instructions/Scrollinstruct.ogg');
+		this.game.load.audio('boss_instruction_sound', 'assets/instructions/Bossinstruct.ogg');
 		
 		// User interfaces
 		this.game.load.spritesheet('button', 'assets/buttons.png', 193, 71);
