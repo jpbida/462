@@ -483,6 +483,8 @@ BasicGame.SideScrollerGame.prototype = {
 		console.log('Won scroller game!');
 		this.current_level = 1;
 		
+		this.game.world.setBounds(0, 0, 1280, 720);
+		
 		// Unlock this mini game
 		this.game.unlockMiniGame(this.state_label);
 		
