@@ -69,14 +69,25 @@ BasicGame.Preloader.prototype = {
 		this.game.load.image('base_tileset', 'assets/tiles_spritesheet2.png');
 		
 		// Audio
-		this.game.load.audio('racing_background_music', 'assets/racing_game/34_Chariot - Stage 4.mp3');
+		this.game.load.audio('win_sound', 'assets/common_sounds/Kids Cheering-SoundBible.com-681813822.ogg');
+		this.game.load.audio('lose_sound', 'assets/common_sounds/Sad-Trombone.ogg');
+		this.game.load.audio('right_answer_sound', 'assets/common_sounds/right_answer_ding.ogg');
+		this.game.load.audio('wrong_answer_sound', 'assets/common_sounds/Banana Peel Slip Zip-SoundBible.com-803276918.ogg');
+		
+		// Race Game Audio
+		this.game.load.audio('racing_background_music', 'assets/racing_game/34_Chariot - Stage 4.ogg');
+		this.game.load.audio('racing_on_ur_mark', 'assets/racing_game/On_ur_mark.ogg');
+		this.game.load.audio('racing_get_set', 'assets/racing_game/Get_set.ogg');
+		this.game.load.audio('racing_go', 'assets/racing_game/Go.ogg');
+		
+		// Scroller Game Audio
 		this.game.load.audio('scroller_background_music', 'assets/side_scroller/Decktonic_-_09_-_Night_Drive.ogg');
-		this.game.load.audio('splat_sound', 'assets/common_sounds/87535__flasher21__splat.wav');
-		this.game.load.audio('win_sound', 'assets/common_sounds/Kids Cheering-SoundBible.com-681813822.mp3');
-		this.game.load.audio('lose_sound', 'assets/common_sounds/Sad-Trombone.mp3');
-		this.game.load.audio('right_answer_sound', 'assets/common_sounds/right_answer_ding.mp3');
-		this.game.load.audio('wrong_answer_sound', 'assets/common_sounds/Banana Peel Slip Zip-SoundBible.com-803276918.mp3');
-		this.game.load.audio('boss_background_music', 'assets/boss_game/Battle_Special.mp3');
+		this.game.load.audio('splat_sound', 'assets/common_sounds/87535__flasher21__splat.ogg');
+		
+		// Boss Game Audio
+		this.game.load.audio('boss_background_music', 'assets/boss_game/Battle_Special.ogg');
+		this.game.load.audio('lasersound', 'assets/boss_game/lasersound.ogg');
+		this.game.load.audio('rocksound', 'assets/boss_game/rocksound2.ogg');
 	
 		// Story Opener files
 		this.game.load.image('cutscene_opener_bg', 'assets/cutscenes/open/bg_scene1.png');
@@ -94,12 +105,11 @@ BasicGame.Preloader.prototype = {
 		this.game.load.image('cutscene_opener_zizo_perfect', 'assets/cutscenes/open/z_perf.png');
 		this.game.load.image('cutscene_opener_newspaper', 'assets/cutscenes/open/newspaper.png');
 		this.game.load.image('cutscene_opener_newspaper2', 'assets/cutscenes/open/newspaper2.png');
-		this.game.load.audio('story_Addi8+5', 'assets/cutscenes/open/Addi8+5.mp3');
-		this.game.load.audio('story_AddiNo', 'assets/cutscenes/open/AddiNo.mp3');
-		this.game.load.audio('story_KmAreYouPositive', 'assets/cutscenes/open/KmAreYouPositive.mp3');
-		this.game.load.audio('story_KmPlusPlusPlus', 'assets/cutscenes/open/KmPlusPlusPlus.mp3');
-		this.game.load.audio('story_KmZizoMyBoy', 'assets/cutscenes/open/KmZizoMyBoy.mp3');
-		this.game.load.audio('story_NButLittleDoTheyKnow', 'assets/cutscenes/open/NButLittleDoTheyKnow.mp3');
+		this.game.load.audio('story_Addi8+5', 'assets/cutscenes/open/Addi8+5.ogg');
+		this.game.load.audio('story_KmAreYouPositive', 'assets/cutscenes/open/KmAreYouPositive.ogg');
+		this.game.load.audio('story_KmPlusPlusPlus', 'assets/cutscenes/open/KmPlusPlusPlus.ogg');
+		this.game.load.audio('story_KmZizoMyBoy', 'assets/cutscenes/open/KmZizoMyBoy.ogg');
+		this.game.load.audio('story_NButLittleDoTheyKnow', 'assets/cutscenes/open/NButLittleDoTheyKnow.ogg');
 		this.game.load.audio('story_NOurStoryBegins', 'assets/cutscenes/open/NOurStoryBegins.ogg');
 		this.game.load.audio('story_NOurHeroZizo', 'assets/cutscenes/open/NOurHeroZizo.ogg');
 		this.game.load.audio('story_Z4+7', 'assets/cutscenes/open/Z4+7.ogg');
@@ -125,9 +135,9 @@ BasicGame.Preloader.prototype = {
 		this.game.load.image('cutscene_3_km2', 'assets/cutscenes/3/km_bf2.png');
 		this.game.load.audio('story_Zaddi', 'assets/cutscenes/3/Z-addi.ogg');
 		this.game.load.audio('story_Zlethergo', 'assets/cutscenes/3/Z-lethergo.ogg');
-		this.game.load.audio('story_Azizo', 'assets/cutscenes/3/Addi-3.mp3');
-		this.game.load.audio('story_KMwell', 'assets/cutscenes/3/KmWellWellWell.mp3');
-		this.game.load.audio('story_KMtry', 'assets/cutscenes/3/KmTryAndStopMe.mp3');
+		this.game.load.audio('story_Azizo', 'assets/cutscenes/3/Addi-3.ogg');
+		this.game.load.audio('story_KMwell', 'assets/cutscenes/3/KmWellWellWell.ogg');
+		this.game.load.audio('story_KMtry', 'assets/cutscenes/3/KmTryAndStopMe.ogg');
 		
 		
 		// Scene 4 (end scene) files
@@ -136,10 +146,10 @@ BasicGame.Preloader.prototype = {
 		this.game.load.image('cutscene_4_addi2', 'assets/cutscenes/4/a_dia2.png');
 		this.game.load.image('cutscene_4_zizo1', 'assets/cutscenes/4/z_dia1.png');
 		this.game.load.image('cutscene_4_km1', 'assets/cutscenes/4/km_dia1.png');
-		this.game.load.audio('story_AddiThanks', 'assets/cutscenes/4/Addi-4.mp3');
-		this.game.load.audio('story_AddiGoHome', 'assets/cutscenes/4/Addi-5.mp3');
+		this.game.load.audio('story_AddiThanks', 'assets/cutscenes/4/Addi-4.ogg');
+		this.game.load.audio('story_AddiGoHome', 'assets/cutscenes/4/Addi-5.ogg');
 		this.game.load.audio('story_ZizoAreYouOkay', 'assets/cutscenes/4/Z-areuok.ogg');
-		this.game.load.audio('story_KMCurse', 'assets/cutscenes/4/KmCurseYou.mp3');
+		this.game.load.audio('story_KMCurse', 'assets/cutscenes/4/KmCurseYou.ogg');
 	},
 	
 	create: function() {

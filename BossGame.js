@@ -53,8 +53,6 @@ BasicGame.BossGame.prototype = {
 		this.game.load.image('gun', 'assets/boss_game/gun.png');
 		this.game.load.image('laser', 'assets/boss_game/laser.png');
 		this.game.load.spritesheet('king', 'assets/boss_game/km_boss.png', 69, 96);
-		this.game.load.audio('lasersound', 'assets/boss_game/lasersound.mp3');
-		this.game.load.audio('rocksound', 'assets/boss_game/rocksound2.mp3');
 	},
 
 	create: function() {

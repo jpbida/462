@@ -235,23 +235,39 @@ BasicGame.HorseGame.prototype = {
 		this.zizo.play('on_mark');
 		this.opponents.callAll('play', null, 'on_mark');
 		
-		setTimeout(function(){
+		var mark = this_ref.game.add.audio('racing_on_ur_mark');
+		mark.onStop.add(function(){
 			count_down_text.setText('Get set...');
-			this_ref.zizo.play('get_set');
-			this_ref.opponents.callAll('play', null, 'get_set');
+			this.zizo.play('get_set');
+			this.opponents.callAll('play', null, 'get_set');
 			
-			setTimeout(function(){
-				count_down_text.setText('GO!!!');
+			var set = this.game.add.audio('racing_get_set');
+			set.onStop.add(function(){
+				count_down_text.setText('GO!!!');	
 				
-				setTimeout(function(){
+				var go = this_ref.game.add.audio('racing_go');
+				go.onStop.add(function(){
 					count_down_text.destroy();
-					this_ref.zizo.play('run');
-					this_ref.opponents.callAll('play', null, 'run');
-					
-					this_ref.startRace.call(this_ref);
-				}, 1000);
-			}, 1000);
-		}, 1000);
+					this.zizo.play('run');
+					this.opponents.callAll('play', null, 'run');
+					this.startRace.call(this);
+				}, this);
+				go.play();			
+			}, this);
+			set.play();
+		}, this);
+		mark.play();
+		
+		
+		// setTimeout(function(){
+			
+			
+			// setTimeout(function(){
+				
+				// setTimeout(function(){
+				// }, 1000);
+			// }, 1000);
+		// }, 1000);
 	},
 	
 	startRace: function() {
