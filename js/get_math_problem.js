@@ -39,6 +39,15 @@ function getMathProblem(type, difficulty) {
 	var operator = '';
 	var answer = 0;
 	
+	if (type == 'mix') {
+		var random_operator = randomIntFromInterval(1, 2);
+		if (random_operator == 1) {
+			type = 'add';
+		} else {
+			type = 'sub';
+		}
+	}
+	
 	if (type == 'add') {
 		operator = '+';
 		answer = first_num + second_num;
