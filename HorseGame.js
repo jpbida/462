@@ -46,8 +46,8 @@ BasicGame.HorseGame = function (game) {
 	this.problem_background = null;
 	
 	this.starting_line_position = 150;
-	// this.min_player_speed = 15;
-	this.min_player_speed = 100;
+	this.min_player_speed = 15;
+	// this.min_player_speed = 100;
 	this.max_player_speed = 60;
 	this.player_run_timer = 0;
 	this.min_opponent_speed = 20;

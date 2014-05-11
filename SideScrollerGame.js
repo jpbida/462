@@ -216,7 +216,7 @@ BasicGame.SideScrollerGame.prototype = {
 	update: function() {
 		this.game.physics.collide(this.zizo,this.layer);
 		this.game.physics.overlap(this.umbrella, this.enemies, this.killEnemy, null, this);
-		// this.game.physics.collide(this.zizo, this.enemies, this.zizoGetsHit, null, this);
+		this.game.physics.collide(this.zizo, this.enemies, this.zizoGetsHit, null, this);
 		this.game.physics.overlap(this.zizo, this.door, this.winLevel, null, this);
 		
 		// Flicker torches
