@@ -1,8 +1,13 @@
 BasicGame.Preloader = function (game) {
+	this.ready = false;
 };
 
 BasicGame.Preloader.prototype = {
 	preload: function() {
+		// Loading text
+		text = this.game.add.text(this.game.world.centerX, this.game.world.centerY, 'Loading', {font: '65px kenvector_future', fill: '#fff'});
+		text.anchor.setTo(0.5, 0.5);
+		
 		// Preload bar
 		this.preloadBar = this.add.sprite(this.world.centerX, this.world.height - 300, 'preloaderBar');
 		this.preloadBar.x = this.preloadBar.x - (this.preloadBar.width / 2);
@@ -56,8 +61,8 @@ BasicGame.Preloader.prototype = {
 		this.game.load.atlasXML('zizo', 'assets/aliens/alienGreen.png', 'assets/aliens/alienGreen.xml');
 		this.game.load.atlasXML('addi', 'assets/aliens/alienPink.png', 'assets/aliens/alienPink.xml');
 		this.game.load.atlasXML('alienBeige', 'assets/aliens/alienBeige.png', 'assets/aliens/alienBeige.xml');
-		this.game.load.atlasXML('alienBlue', 'assets/aliens/alienBlue.png', 'assets/aliens/alienBlue.xml');
-		this.game.load.atlasXML('alienYellow', 'assets/aliens/alienYellow.png', 'assets/aliens/alienYellow.xml');
+		this.game.load.atlasXML('alienBlue3', 'assets/aliens/alienBlue3.png', 'assets/aliens/alienBlue.xml');
+		this.game.load.atlasXML('alienYellow4', 'assets/aliens/alienYellow4.png', 'assets/aliens/alienYellow.xml');
 		this.game.load.atlasXML('enemies', 'assets/side_scroller/enemies.png', 'assets/side_scroller/enemies.xml');
 		this.game.load.atlasXML('items', 'assets/side_scroller/items_spritesheet.png', 'assets/side_scroller/items_spritesheet.xml');
 		this.game.load.spritesheet('other_items', 'assets/side_scroller/other_items.png', 70, 69);
@@ -73,6 +78,8 @@ BasicGame.Preloader.prototype = {
 		this.game.load.audio('lose_sound', 'assets/common_sounds/Sad-Trombone.ogg');
 		this.game.load.audio('right_answer_sound', 'assets/common_sounds/right_answer_ding.ogg');
 		this.game.load.audio('wrong_answer_sound', 'assets/common_sounds/Banana Peel Slip Zip-SoundBible.com-803276918.ogg');
+		this.game.load.audio('ouch_sound', 'assets/common_sounds/ow.ogg');
+		this.game.load.audio('main_menu_music', 'assets/titlescreen.ogg');
 		
 		// Race Game Audio
 		this.game.load.audio('racing_background_music', 'assets/racing_game/34_Chariot - Stage 4.ogg');
@@ -125,6 +132,21 @@ BasicGame.Preloader.prototype = {
 		
 		// Scene 2 (after winning flying car, arriving at castle, inside castle) files
 		this.game.load.image('zizocar', 'assets/cutscenes/2/flyingcar.png');
+		this.game.load.image('justcar', 'assets/cutscenes/2/justcar.png');
+		this.game.load.image('umbrella', 'assets/cutscenes/2/umbrella.png');
+		this.game.load.image('cutscene_2_outside', 'assets/cutscenes/2/bg_s2_outside.png');
+		this.game.load.image('cutscene_2_inside', 'assets/cutscenes/2/bg_s2_inside.png');
+		this.game.load.image('cutscene_2_zfinally', 'assets/cutscenes/2/z_s2_finally.png');
+		this.game.load.image('cutscene_2_kmonce', 'assets/cutscenes/2/km_s2.png');
+		this.game.load.image('cutscene_2_ano', 'assets/cutscenes/2/addi_s2.png');
+		this.game.load.image('cutscene_2_zalmost', 'assets/cutscenes/2/z_s2_almost.png');
+		this.game.load.image('cutscene_2_zumbrella', 'assets/cutscenes/2/z_s2_umbrella.png');
+		this.game.load.audio('story_Ncar', 'assets/cutscenes/2/NCar.ogg');
+		this.game.load.audio('story_Zfinally', 'assets/cutscenes/2/Zfinally.ogg');
+		this.game.load.audio('story_KMonce', 'assets/cutscenes/2/KmOnceICover.ogg');
+		this.game.load.audio('story_Ano', 'assets/cutscenes/2/AddiNo.ogg');
+		this.game.load.audio('story_Zalmost', 'assets/cutscenes/2/Z-almostthere.ogg');
+		this.game.load.audio('story_Zumbrella', 'assets/cutscenes/2/Zumbrella.ogg');
 		
 		// Scene 3 (before boss fight) files
 		this.game.load.image('cutscene_3_bg', 'assets/cutscenes/3/scene3_low.png');
@@ -150,22 +172,22 @@ BasicGame.Preloader.prototype = {
 		this.game.load.audio('story_AddiGoHome', 'assets/cutscenes/4/Addi-5.ogg');
 		this.game.load.audio('story_ZizoAreYouOkay', 'assets/cutscenes/4/Z-areuok.ogg');
 		this.game.load.audio('story_KMCurse', 'assets/cutscenes/4/KmCurseYou.ogg');
+		
+		// Credits
+		this.game.load.image('credits', 'assets/credits.png');
+		this.game.load.audio('credits_music', 'assets/credits.ogg');
 	},
 	
 	create: function() {
-		text = this.game.add.text(this.game.world.centerX, this.game.world.centerY, 'Loading screen', {font: '65px Arial', fill: '#fff'});
-		text.anchor.setTo(0.5, 0.5);
-		
 		//	Once the load has finished we disable the crop because we're going to sit in the update loop for a short while as the music decodes
 		this.preloadBar.cropEnabled = false;
-		
-		this.game.state.start('TitleScreen');
-		// this.game.state.start('StoryScene3');
-		// this.game.state.start('MainMenu');
-		// this.game.state.start('SideScrollerGame');
-		// this.game.state.start('HorseGame');
-		// this.game.state.start('PlatformGame');
-		// this.game.state.start('StoryOpen');
-		// this.game.state.start('BossGame');
+	},
+	
+	update: function() {
+		if (this.cache.isSoundDecoded('main_menu_music') && this.ready == false)
+		{
+			this.ready = true;
+			this.game.state.start('TitleScreen');
+		}
 	}
 };

@@ -1,4 +1,5 @@
 BasicGame.MainMenu = function (game) {
+	this.music = null;
 };
 
 BasicGame.MainMenu.prototype = {
@@ -7,6 +8,8 @@ BasicGame.MainMenu.prototype = {
 	
 	create: function() {
 		console.log('Main Menu');
+		this.music = this.game.add.audio('main_menu_music', 1, true);
+		this.music.play();
 		// console.log('Overall score = ' + this.game.global_vars.player_overall_score);
 		
 		// Background
@@ -46,18 +49,22 @@ BasicGame.MainMenu.prototype = {
 	},
 	
 	startRaceGame: function() {
+		this.music.stop();
 		this.game.state.start('HorseGame');
 	},
 	
 	startSideScrollerGame: function() {
+		this.music.stop();
 		this.game.state.start('SideScrollerGame');
 	},
 	
 	startBossGame: function() {
+		this.music.stop();
 		this.game.state.start('BossGame');
 	},
 	
 	startStoryMode: function() {
+		this.music.stop();
 		this.game.deleteSavedState();
 		
 		this.game.global_vars.story_mode = true;
@@ -65,6 +72,7 @@ BasicGame.MainMenu.prototype = {
 	},
 	
 	loadSavedState: function() {
+		this.music.stop();
 		this.game.global_vars.story_mode = true;
 		this.game.global_vars.load_saved_state = true;
 		this.game.global_vars.saved_state = $.cookie('saved_state');

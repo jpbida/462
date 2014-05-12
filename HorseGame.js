@@ -109,7 +109,7 @@ BasicGame.HorseGame.prototype = {
 		
 		// Create Opponents
 		this.opponents = this.game.add.group();
-		var opponent_sprites = ['alienBeige', 'alienBlue', 'alienYellow'];
+		var opponent_sprites = ['alienBeige', 'alienBlue3', 'alienYellow4'];
 		for (var i = 0; i < opponent_sprites.length; i++) {
 			var opponent = this.opponents.create(this.starting_line_position, this.game.world.height - (90 * i) - 115, opponent_sprites[i]);
 			opponent.anchor.setTo(1, 1);
@@ -235,17 +235,17 @@ BasicGame.HorseGame.prototype = {
 		this.zizo.play('on_mark');
 		this.opponents.callAll('play', null, 'on_mark');
 		
-		var mark = this_ref.game.add.audio('racing_on_ur_mark');
+		var mark = this_ref.game.add.audio('racing_on_ur_mark', 0.7, false);
 		mark.onStop.add(function(){
 			count_down_text.setText('Get set...');
 			this.zizo.play('get_set');
 			this.opponents.callAll('play', null, 'get_set');
 			
-			var set = this.game.add.audio('racing_get_set');
+			var set = this.game.add.audio('racing_get_set', 0.7, false);
 			set.onStop.add(function(){
 				count_down_text.setText('GO!!!');	
 				
-				var go = this_ref.game.add.audio('racing_go');
+				var go = this_ref.game.add.audio('racing_go', 0.7, false);
 				go.onStop.add(function(){
 					count_down_text.destroy();
 					this.zizo.play('run');
@@ -257,17 +257,6 @@ BasicGame.HorseGame.prototype = {
 			set.play();
 		}, this);
 		mark.play();
-		
-		
-		// setTimeout(function(){
-			
-			
-			// setTimeout(function(){
-				
-				// setTimeout(function(){
-				// }, 1000);
-			// }, 1000);
-		// }, 1000);
 	},
 	
 	startRace: function() {
@@ -398,23 +387,23 @@ BasicGame.HorseGame.prototype = {
 		}
 		
 		if (!this.game.global_vars.story_mode) {
-			start_button = this.game.add.button(this.game.world.centerX, this.game.world.height - 100, 'yellow_buttons', this.winGame, this, 3, 3, 4);
+			start_button = this.game.add.button(this.game.world.centerX, this.game.world.height - 100, 'yellow_buttons', this.restart, this, 3, 3, 4);
 			start_button.anchor.setTo(0.5, 0.5);
 			start_text = this.game.add.text(4, 0, 'Menu', {font: '30pt kenvector_future', fill: '#000', align: 'center'});
 			start_text.anchor.setTo(0.5, 0.5);
-			start_button.addChild(start_text)
+			start_button.addChild(start_text);
 		} else if (win) {
 			start_button = this.game.add.button(this.game.world.centerX, this.game.world.height - 100, 'yellow_buttons', this.finishLevel, this, 3, 3, 4);
 			start_button.anchor.setTo(0.5, 0.5);
 			start_text = this.game.add.text(4, 0, 'Next', {font: '30pt kenvector_future', fill: '#000', align: 'center'});
 			start_text.anchor.setTo(0.5, 0.5);
-			start_button.addChild(start_text)
+			start_button.addChild(start_text);
 		} else {
-			start_button = this.game.add.button(this.game.world.centerX, this.game.world.height - 100, 'yellow_buttons', this.startLevel, this, 3, 3, 4);
+			start_button = this.game.add.button(this.game.world.centerX, this.game.world.height - 100, 'yellow_buttons', this.restart, this, 3, 3, 4);
 			start_button.anchor.setTo(0.5, 0.5);
 			start_text = this.game.add.text(4, 0, 'Try Again', {font: '20pt kenvector_future', fill: '#000', align: 'center'});
 			start_text.anchor.setTo(0.5, 0.5);
-			start_button.addChild(start_text)
+			start_button.addChild(start_text);
 		}
 		
 		result = 'Score:\n' + this.score + '\n';
@@ -474,6 +463,10 @@ BasicGame.HorseGame.prototype = {
 		} else {
 			this.game.goToNextState.call(this);
 		}
+	},
+	
+	restart: function() {
+		this.game.state.start('MainMenu', true, false, {restarted: true});
 	},
 	
 	shutdown: function() {

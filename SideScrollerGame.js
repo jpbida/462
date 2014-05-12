@@ -59,6 +59,7 @@ BasicGame.SideScrollerGame = function (game) {
 	this.right_answer_sound = null;
 	this.wrong_answer_sound = null;
 	this.splat_sound = null;
+	this.ouch_sound = null;
 	
 	this.already_dead = false;
 	this.finished_level = false;
@@ -81,6 +82,7 @@ BasicGame.SideScrollerGame.prototype = {
 		this.right_answer_sound = this.game.add.audio('right_answer_sound');
 		this.wrong_answer_sound = this.game.add.audio('wrong_answer_sound');
 		this.splat_sound = this.game.add.audio('splat_sound');
+		this.ouch_sound = this.game.add.audio('ouch_sound');
 		
 		// Manage Layers
 		this.background_layer = this.game.add.group();
@@ -216,7 +218,8 @@ BasicGame.SideScrollerGame.prototype = {
 	update: function() {
 		this.game.physics.collide(this.zizo,this.layer);
 		this.game.physics.overlap(this.umbrella, this.enemies, this.killEnemy, null, this);
-		this.game.physics.collide(this.zizo, this.enemies, this.zizoGetsHit, null, this);
+		// this.game.physics.collide(this.zizo, this.enemies, this.zizoGetsHit, null, this);
+		this.game.physics.overlap(this.zizo, this.enemies, this.zizoGetsHit, null, this);
 		this.game.physics.overlap(this.zizo, this.door, this.winLevel, null, this);
 		
 		// Flicker torches
@@ -372,16 +375,24 @@ BasicGame.SideScrollerGame.prototype = {
 	
 	zizoGetsHit: function(zizo, enemy) {
 		if (enemy.alive && this.umbrella.umbrellaState == 'close') {
-			this.zizo.play('die');
-			this.zizo.body.velocity.x = 0;
-			enemy.body.velocity.x = 0;
+			enemy.alive = false;
 			
-			if (!this.already_dead) {
-				this.already_dead = true;
-				this.background_music.stop();
-				this.lose_sound.play();
-				this.showScoreboard(false);
-			}
+			// this.zizo_lives--;
+			// if (this.zizo_lives == 0) {
+				// this.zizo.play('die');
+				// this.zizo.body.velocity.x = 0;
+				// enemy.body.velocity.x = 0;
+				// this.already_dead = true;
+				// this.background_music.stop();
+				// this.lose_sound.play();
+				// this.showScoreboard(false);
+			// } else {
+				this.ouch_sound.play();
+				this.score -= 50;
+				if (this.score < 0) {
+					this.score = 0;
+				}
+			// }
 		}
 	},
 	
@@ -427,21 +438,21 @@ BasicGame.SideScrollerGame.prototype = {
 			start_button.anchor.setTo(0.5, 0.5);
 			start_text = this.game.add.text(4, 0, 'Menu', {font: '30pt kenvector_future', fill: '#000', align: 'center'});
 			start_text.anchor.setTo(0.5, 0.5);
-			start_button.addChild(start_text)
+			start_button.addChild(start_text);
 		} else if (win) {
 			result_header = 'You Win!!';
 			start_button = this.game.add.button(middle, this.game.world.height - 100, 'yellow_buttons', this.finishLevel, this, 3, 3, 4);
 			start_button.anchor.setTo(0.5, 0.5);
 			start_text = this.game.add.text(4, 0, 'NEXT', {font: '30pt kenvector_future', fill: '#000', align: 'center'});
 			start_text.anchor.setTo(0.5, 0.5);
-			start_button.addChild(start_text)
+			start_button.addChild(start_text);
 		} else {
 			result_header = 'You Lose...';
 			start_button = this.game.add.button(middle, this.game.world.height - 100, 'yellow_buttons', this.startLevel, this, 3, 3, 4);
 			start_button.anchor.setTo(0.5, 0.5);
 			start_text = this.game.add.text(4, 0, 'Try Again', {font: '20pt kenvector_future', fill: '#000', align: 'center'});
 			start_text.anchor.setTo(0.5, 0.5);
-			start_button.addChild(start_text)
+			start_button.addChild(start_text);
 		}
 		
 		result = 'Score:\n' + this.score + '\n';

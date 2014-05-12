@@ -45,6 +45,7 @@ BasicGame.BossGame = function (game) {
 	
 	this.win_sound = null;
 	this.lose_sound = null;
+	this.ouch_sound = null;
 };
 
 BasicGame.BossGame.prototype = {
@@ -64,6 +65,7 @@ BasicGame.BossGame.prototype = {
 		this.wrong_answer_sound = this.game.add.audio('wrong_answer_sound');
 		this.win_sound = this.game.add.audio('win_sound');
 		this.lose_sound = this.game.add.audio('lose_sound');
+		this.ouch_sound = this.game.add.audio('ouch_sound');
 		
 		// Manage Layers
 		this.background_layer = this.game.add.group();
@@ -381,14 +383,18 @@ BasicGame.BossGame.prototype = {
 		fade_black.start();
 	},
 
-	loseRace: function() {
+	loseRace: function(zizo, rock) {
 		if (!this.started) {
 			return;
 		}
 
-		this.endRace();
-		this.lose_sound.play();
-		this.showScoreboard(false);
+		if (rock.alive) {
+			rock.alive = false;
+			this.ouch_sound.play();
+			// this.endRace();
+			// this.lose_sound.play();
+			// this.showScoreboard(false);
+		}
 	},
 	
 	showScoreboard: function(win) {
@@ -397,12 +403,19 @@ BasicGame.BossGame.prototype = {
 		this.scoreboard.add(this.game.add.sprite(0, 0, 'score_board'));
 		var start_button = null;
 		
-		
-		start_button = this.game.add.button(this.game.world.centerX, this.game.world.height - 100, 'yellow_buttons', this.startLevel, this, 3, 3, 4);
-		start_button.anchor.setTo(0.5, 0.5);
-		start_text = this.game.add.text(4, 0, 'Try Again', {font: '20pt kenvector_future', fill: '#000', align: 'center'});
-		start_text.anchor.setTo(0.5, 0.5);
-		start_button.addChild(start_text)
+		if (!this.game.global_vars.story_mode) {
+			start_button = this.game.add.button(this.game.world.centerX, this.game.world.height - 100, 'yellow_buttons', this.backToMainMenu, this, 3, 3, 4);
+			start_button.anchor.setTo(0.5, 0.5);
+			start_text = this.game.add.text(4, 0, 'Menu', {font: '30pt kenvector_future', fill: '#000', align: 'center'});
+			start_text.anchor.setTo(0.5, 0.5);
+			start_button.addChild(start_text);
+		}  else {
+			start_button = this.game.add.button(this.game.world.centerX, this.game.world.height - 100, 'yellow_buttons', this.startLevel, this, 3, 3, 4);
+			start_button.anchor.setTo(0.5, 0.5);
+			start_text = this.game.add.text(4, 0, 'Try Again', {font: '20pt kenvector_future', fill: '#000', align: 'center'});
+			start_text.anchor.setTo(0.5, 0.5);
+			start_button.addChild(start_text);
+		}
 		
 		var header = this.game.add.text(this.game.world.centerX, this.game.world.centerY - 100, 'You lose...', {font: '75pt kenvector_future', fill: '#fff', align: 'center'});
 		header.anchor.setTo(0.5, 0);
@@ -445,7 +458,11 @@ BasicGame.BossGame.prototype = {
 		this.game.unlockMiniGame(this.state_label);
 		this.game.goToNextState.call(this);
 	},
-
+	
+	backToMainMenu: function() {
+		this.game.state.start('MainMenu');
+	},
+	
 	shutdown: function() {
 		console.log('shutdown');
 		// console.log(this.zizo.body.velocity.x);
