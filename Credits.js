@@ -16,7 +16,7 @@ BasicGame.Credits.prototype = {
 		var main_menu_button = this.game.add.button(this.game.world.centerX, this.game.world.centerY - 20, 'yellow_buttons', this.backToMainMenu, this, 3, 3, 4);
 		main_menu_button.alpha = 0;
 		main_menu_button.anchor.setTo(0.5, 0.5);
-		main_menu_button_text = this.game.add.text(0, 0, 'Main Menu', {font: '30px Arial', fill: '#000', align: 'center'})
+		main_menu_button_text = this.game.add.text(2, 0, 'Main Menu', {font: '25px kenvector_future', fill: '#000', align: 'center'})
 		main_menu_button_text.anchor.setTo(0.5, 0.5);
 		main_menu_button.addChild(main_menu_button_text);
 		

@@ -491,6 +491,7 @@ BasicGame.SideScrollerGame.prototype = {
 	},
 	
 	winGame: function() {
+		this.win_sound.stop();
 		console.log('Won scroller game!');
 		this.current_level = 1;
 		
