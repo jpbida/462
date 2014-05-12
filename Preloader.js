@@ -181,13 +181,6 @@ BasicGame.Preloader.prototype = {
 	create: function() {
 		//	Once the load has finished we disable the crop because we're going to sit in the update loop for a short while as the music decodes
 		this.preloadBar.cropEnabled = false;
-	},
-	
-	update: function() {
-		if (this.cache.isSoundDecoded('main_menu_music') && this.ready == false)
-		{
-			this.ready = true;
 			this.game.state.start('TitleScreen');
-		}
 	}
 };
