@@ -79,7 +79,7 @@ BasicGame.Preloader.prototype = {
 		this.game.load.audio('right_answer_sound', 'assets/common_sounds/right_answer_ding.ogg');
 		this.game.load.audio('wrong_answer_sound', 'assets/common_sounds/Banana Peel Slip Zip-SoundBible.com-803276918.ogg');
 		this.game.load.audio('ouch_sound', 'assets/common_sounds/ow.ogg');
-		this.game.load.audio('main_menu_music', 'assets/titlescreen.ogg');
+		this.game.load.audio('main_menu_music', 'assets/titlescreen_96.ogg');
 		
 		// Race Game Audio
 		this.game.load.audio('racing_background_music', 'assets/racing_game/34_Chariot - Stage 4.ogg');
@@ -181,6 +181,13 @@ BasicGame.Preloader.prototype = {
 	create: function() {
 		//	Once the load has finished we disable the crop because we're going to sit in the update loop for a short while as the music decodes
 		this.preloadBar.cropEnabled = false;
-			this.game.state.start('TitleScreen');
+	},
+	
+	update: function() {
+		if (this.cache.isSoundDecoded('main_menu_music') && this.ready == false)
+		{
+			this.ready = true;
+			this.game.state.start('Credits');
+		}
 	}
 };
