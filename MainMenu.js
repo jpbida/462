@@ -8,8 +8,8 @@ BasicGame.MainMenu.prototype = {
 	
 	create: function() {
 		console.log('Main Menu');
-		this.music = this.game.add.audio('main_menu_music', 1, true);
-		this.music.play();
+		this.music = this.game.add.audio('main_menu_music');
+		this.music.play('', 0, 1, true);
 		// console.log('Overall score = ' + this.game.global_vars.player_overall_score);
 		
 		// Background

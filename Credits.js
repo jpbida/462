@@ -32,7 +32,7 @@ BasicGame.Credits.prototype = {
 		}, this);
 		
 		move.start();
-		this.music.play();
+		this.music.play('', 0, 1, false);
 		
 		// Delete saved game
 		this.game.deleteSavedState();

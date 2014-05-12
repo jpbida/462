@@ -235,28 +235,28 @@ BasicGame.HorseGame.prototype = {
 		this.zizo.play('on_mark');
 		this.opponents.callAll('play', null, 'on_mark');
 		
-		var mark = this_ref.game.add.audio('racing_on_ur_mark', 0.7, false);
+		var mark = this_ref.game.add.audio('racing_on_ur_mark');
 		mark.onStop.add(function(){
 			count_down_text.setText('Get set...');
 			this.zizo.play('get_set');
 			this.opponents.callAll('play', null, 'get_set');
 			
-			var set = this.game.add.audio('racing_get_set', 0.7, false);
+			var set = this.game.add.audio('racing_get_set');
 			set.onStop.add(function(){
 				count_down_text.setText('GO!!!');	
 				
-				var go = this_ref.game.add.audio('racing_go', 0.7, false);
+				var go = this_ref.game.add.audio('racing_go');
 				go.onStop.add(function(){
 					count_down_text.destroy();
 					this.zizo.play('run');
 					this.opponents.callAll('play', null, 'run');
 					this.startRace.call(this);
 				}, this);
-				go.play();			
+				go.play('', 0, 0.7, false);			
 			}, this);
-			set.play();
+			set.play('', 0, 0.7, false);
 		}, this);
-		mark.play();
+		mark.play('', 0, 0.7, false);
 	},
 	
 	startRace: function() {
