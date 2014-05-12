@@ -43,6 +43,7 @@ BasicGame.Credits.prototype = {
 	
 	backToMainMenu: function() {
 		this.music.stop();
-		this.game.state.start('MainMenu');
+		// this.game.state.start('MainMenu');
+		window.location.reload();
 	}
 };

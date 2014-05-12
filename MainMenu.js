@@ -43,6 +43,7 @@ BasicGame.MainMenu.prototype = {
 		
 		// Start story mode
 		story_mode_button = this.game.add.button(this.game.width - 590, 545, 'story_button', this.startStoryMode, this);
+		this.game.global_vars.story_mode = false;
 	},
 	
 	update: function() {
